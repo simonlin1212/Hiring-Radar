@@ -144,7 +144,9 @@ Sob [licença MIT](LICENSE) "como está", sem garantia de qualquer tipo.
 
 ## 🙋 Autor
 
-Criado por **Simon** — uma ferramenta local que agrega vagas oficiais de empresas do mundo todo e da China. PRs bem-vindos para adicionar mais empresas / fontes (veja [CONTRIBUTING.md](CONTRIBUTING.md)).
+**Simon Lin** · Douyin: Simon林 · WeChat: 硅基世纪
+
+Uma ferramenta local que agrega vagas oficiais de empresas do mundo todo e da China. PRs bem-vindos para adicionar mais empresas / fontes (veja [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ## 📄 License
 

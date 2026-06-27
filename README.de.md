@@ -144,7 +144,9 @@ Unter [MIT-Lizenz](LICENSE) „wie besehen", ohne jegliche Gewährleistung.
 
 ## 🙋 Autor
 
-Erstellt von **Simon** — ein lokales Tool, das offizielle offene Stellen von Unternehmen weltweit und in China aggregiert. PRs zum Hinzufügen weiterer Unternehmen / Quellen willkommen (siehe [CONTRIBUTING.md](CONTRIBUTING.md)).
+**Simon Lin** · Douyin: Simon林 · WeChat: 硅基世纪
+
+Ein lokales Tool, das offizielle offene Stellen von Unternehmen weltweit und in China aggregiert. PRs zum Hinzufügen weiterer Unternehmen / Quellen willkommen (siehe [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ## 📄 License
 

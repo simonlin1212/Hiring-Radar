@@ -144,7 +144,9 @@ key | beisen | 회사 | slug             # 포털 {slug}.zhiye.com, 예: dreame
 
 ## 🙋 저자
 
-**Simon** 제작 — 전 세계와 중국 기업의 공식 채용 공고를 한곳에 모으는 로컬 도구. 회사/소스 추가 PR 환영([CONTRIBUTING.md](CONTRIBUTING.md)).
+**Simon Lin** · Douyin: Simon林 · WeChat: 硅基世纪
+
+전 세계와 중국 기업의 공식 채용 공고를 한곳에 모으는 로컬 도구. 회사/소스 추가 PR 환영([CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ## 📄 License
 

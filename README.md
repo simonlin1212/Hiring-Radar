@@ -192,7 +192,9 @@ Hiring-Radar/
 
 ## 🙋 作者
 
-由 **Simon** 构建——一个把全球与中国公司官方在招岗位聚合到一处的本地工具。欢迎 PR 补充更多公司 / 数据源（见 [CONTRIBUTING.md](CONTRIBUTING.md)）。
+**Simon 林** · 抖音「Simon林」· 公众号「硅基世纪」
+
+一个把全球与中国公司官方在招岗位聚合到一处的本地工具。欢迎 PR 补充更多公司 / 数据源（见 [CONTRIBUTING.md](CONTRIBUTING.md)）。
 
 ## 📄 License
 

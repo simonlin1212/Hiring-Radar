@@ -192,7 +192,9 @@ Provided under the [MIT License](LICENSE) "as is", without warranty of any kind.
 
 ## 🙋 Author
 
-Built by **Simon** — a local tool that aggregates official open positions from companies worldwide and in China. PRs welcome to add more companies / sources (see [CONTRIBUTING.md](CONTRIBUTING.md)).
+**Simon Lin** · Douyin: Simon林 · WeChat: 硅基世纪
+
+A local tool that aggregates official open positions from companies worldwide and in China. PRs welcome to add more companies / sources (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ## 📄 License
 

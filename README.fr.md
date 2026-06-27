@@ -144,7 +144,9 @@ Sous [licence MIT](LICENSE) « en l'état », sans garantie d'aucune sorte.
 
 ## 🙋 Auteur
 
-Créé par **Simon** — un outil local qui agrège les offres officielles d'entreprises du monde entier et de Chine. PRs bienvenues pour ajouter des entreprises / sources (voir [CONTRIBUTING.md](CONTRIBUTING.md)).
+**Simon Lin** · Douyin : Simon林 · WeChat : 硅基世纪
+
+Un outil local qui agrège les offres officielles d'entreprises du monde entier et de Chine. PRs bienvenues pour ajouter des entreprises / sources (voir [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ## 📄 License
 

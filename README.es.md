@@ -144,7 +144,9 @@ Bajo [licencia MIT](LICENSE) "tal cual", sin garantía de ningún tipo.
 
 ## 🙋 Autor
 
-Creado por **Simon** — una herramienta local que agrega vacantes oficiales de empresas de todo el mundo y de China. PRs bienvenidos para añadir más empresas / fuentes (ver [CONTRIBUTING.md](CONTRIBUTING.md)).
+**Simon Lin** · Douyin: Simon林 · WeChat: 硅基世纪
+
+Una herramienta local que agrega vacantes oficiales de empresas de todo el mundo y de China. PRs bienvenidos para añadir más empresas / fuentes (ver [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ## 📄 License
 
