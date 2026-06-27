@@ -1,0 +1,3 @@
+# 核心功能纯标准库，无需安装任何依赖。
+# 仅当要查 Moka 系中国公司（如 --local yostar / tesla-cn 等）时需要：
+pycryptodome>=3.19

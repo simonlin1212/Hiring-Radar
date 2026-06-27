@@ -1,0 +1,186 @@
+# Hiring Radar v2 · 中国公司种子表（数据驱动；加公司=加一行，零代码）
+# 格式： key | type | 公司名 | arg1 | arg2 | 赛道
+#   type=feishu : arg1=门户域名         arg2=(留空)
+#   type=moka   : arg1=orgId           arg2=siteId
+# 用法： hiring_radar_v2.py --local <key> --keyword ...
+# 内置脚本(bytedance/tencent/netease/jd/baidu/nio/xpeng/bambulab/momenta/boke/yostar/tesla-cn)优先，勿与本表 key 冲突。
+# 全部 2026-06-27 实测可返回真实岗位（飞书=200含websiteInfo / Moka=AES解出岗位）。
+
+# ========== 飞书招聘（type=feishu）==========
+# --- 新势力车厂 / 汽车 ---
+li | feishu | 理想汽车 | li.jobs.feishu.cn |  | 车厂
+avatr | feishu | 阿维塔 | xcn5vbnquq58.jobs.feishu.cn |  | 车厂
+zeron | feishu | 零一汽车 | zeron.jobs.feishu.cn |  | 新能源重卡
+ecartech | feishu | 易咖智车 | ecartech.jobs.feishu.cn |  | 无人物流车
+ecarx | feishu | 亿咖通 | ecarxgroup.jobs.feishu.cn |  | 汽车电子
+desaysv | feishu | 德赛西威 | yesv-desaysv.jobs.feishu.cn |  | 智驾Tier1
+dcar | feishu | 懂车帝 | dcar.jobs.feishu.cn |  | 汽车互联网
+# --- 人形机器人 / 具身智能 ---
+x2robot | feishu | 自变量机器人 | x2-robot.jobs.feishu.cn |  | 具身智能
+bjhumanoid | feishu | 北京人形机器人创新中心 | zitd5je6f7j.jobs.feishu.cn |  | 人形机器人
+agibot | feishu | 智元机器人 | agirobot.jobs.feishu.cn |  | 人形机器人
+galbot | feishu | 银河通用 | owm6ymi5v9b.jobs.feishu.cn/870797 |  | 具身智能(社招门户;校招门户在/584984)
+robotera | feishu | 星动纪元 | k0fqxcszc9.jobs.feishu.cn |  | 人形机器人
+spirit | feishu | 千寻智能 | nwd4iy9rd2s.jobs.feishu.cn |  | 具身智能
+tars | feishu | 它石智航 | tarsrobot.jobs.feishu.cn |  | 具身智能
+flexiv | feishu | 非夕机器人 | flexivrobotics.jobs.feishu.cn |  | 机器人
+sharpa | feishu | Sharpa | fcn5hvc5qbfs.jobs.feishu.cn |  | 灵巧手
+mammotion | feishu | 库犸科技 | mammotion.jobs.feishu.cn |  | 割草机器人
+# --- AI 大模型 / Infra ---
+zhipu | feishu | 智谱AI | zhipu-ai.jobs.feishu.cn |  | 大模型
+baichuan | feishu | 百川智能 | cq6qe6bvfr6.jobs.feishu.cn |  | 大模型
+minimax | feishu | MiniMax | vrfi1sk8a0.jobs.feishu.cn |  | 大模型
+moonshot | feishu | 月之暗面 | moonshot.jobs.feishu.cn |  | 大模型
+modelbest | feishu | 面壁智能 | modelbest.jobs.feishu.cn |  | 大模型
+01ai | feishu | 零一万物 | 01ai.jobs.feishu.cn |  | 大模型
+infinigence | feishu | 无问芯穹 | infinigence.jobs.feishu.cn |  | AIInfra
+shengshu | feishu | 生数科技 | shengshu.jobs.feishu.cn |  | AI视频
+aisphere | feishu | 爱诗科技 | aisphere.jobs.feishu.cn |  | AI视频
+gigaai | feishu | 极佳科技 | gigaai0118.jobs.feishu.cn |  | 世界模型
+aibee | feishu | 爱笔智能 | aibee.jobs.feishu.cn |  | AI
+juzibot | feishu | 句子互动 | juzihudong.jobs.feishu.cn |  | AIAgent
+shixiang | feishu | 拾象科技 | shixiangtech.jobs.feishu.cn |  | AI投研
+sii | feishu | 上海创智学院 | sii-czxy.jobs.feishu.cn |  | AI科研
+# --- 自动驾驶 ---
+ponyai | feishu | 小马智行 | ponyai.jobs.feishu.cn |  | 自动驾驶
+holomatic | feishu | 禾多科技 | holomatic.jobs.feishu.cn |  | 自动驾驶
+neuehct | feishu | 智驾新程 | neuehct.jobs.feishu.cn |  | 自动驾驶
+# --- 半导体 / 芯片 / 激光雷达 ---
+mthreads | feishu | 摩尔线程 | mthreads.jobs.feishu.cn |  | GPU
+houmo | feishu | 后摩智能 | houmo.jobs.feishu.cn |  | 存算一体
+brightchip | feishu | 光明之芯 | brightchip.jobs.feishu.cn |  | 半导体
+icleague | feishu | 芯盟科技 | icleague.jobs.feishu.cn |  | 半导体
+carizon | feishu | 酷睿程 | carizon.jobs.feishu.cn |  | 智驾芯片
+hesai | feishu | 禾赛科技 | kwh0jtf778.jobs.feishu.cn |  | 激光雷达
+wanji | feishu | 万集科技 | fpq5u8xh3h.jobs.feishu.cn |  | 雷达V2X
+vast | feishu | VAST | a9ihi0un9c.jobs.feishu.cn |  | AI3D
+# --- 高端制造 / 硬件 ---
+anker | feishu | 安克创新 | anker-in.jobs.feishu.cn |  | 消费电子
+insta360 | feishu | 影石Insta360 | arashivision.jobs.feishu.cn |  | 消费电子
+xtool | feishu | xTool | xtool.jobs.feishu.cn |  | 激光雕刻
+autel | feishu | 道通智能 | iwpirwbutbu.jobs.feishu.cn |  | 无人机
+thundersoft | feishu | 中科创达 | thundersoft.jobs.feishu.cn |  | 智能软件
+hete | feishu | 和而泰 | salcje7shg.jobs.feishu.cn |  | 智能控制器
+kengic | feishu | 科捷智能 | kengic.jobs.feishu.cn |  | 物流装备
+breo | feishu | 倍轻松 | e0cmewvq7v7.jobs.feishu.cn |  | 智能穿戴
+# --- 游戏 ---
+lilith | feishu | 莉莉丝 | lilithgames.jobs.feishu.cn |  | 游戏
+kurogame | feishu | 库洛游戏 | kurogame.jobs.feishu.cn |  | 游戏
+moonton | feishu | 沐瞳科技 | moonton.jobs.feishu.cn |  | 游戏
+coconutisland | feishu | 椰岛游戏 | coconutisland.jobs.feishu.cn |  | 游戏
+boomingtech | feishu | BoomingTech | boomingtech.jobs.feishu.cn |  | 游戏
+metaapp | feishu | MetaApp | meta.jobs.feishu.cn |  | 游戏平台
+xdinc | feishu | 心动网络 | xd-legacy.jobs.feishu.cn |  | 游戏
+wepie | feishu | 微派网络 | wepie.jobs.feishu.cn |  | 游戏
+# --- 其它知名 ---
+hongshan | feishu | 红杉中国 | hongshan.jobs.feishu.cn |  | 投资
+dedao | feishu | 得到 | dedao.jobs.feishu.cn |  | 知识付费
+maimai | feishu | 脉脉 | maimai.jobs.feishu.cn |  | 互联网
+zego | feishu | 即构科技 | zegocloud.jobs.feishu.cn |  | RTC
+blacklake | feishu | 黑湖科技 | blacklake.jobs.feishu.cn |  | 工业软件
+genki | feishu | 元气森林 | k11pnjpvz1.jobs.feishu.cn |  | 消费
+ireader | feishu | 掌阅科技 | q7w8vltyes.jobs.feishu.cn |  | 互联网
+babycare | feishu | Babycare | babycare.jobs.feishu.cn |  | 母婴
+leoao | feishu | 乐刻运动 | leoao-inc.jobs.feishu.cn |  | 健身
+mediastorm | feishu | 影视飓风 | mediastorm.jobs.feishu.cn |  | 内容
+bluefocus | feishu | 蓝色光标 | bluefocus.jobs.feishu.cn |  | 营销
+cider | feishu | Cider | ciderglobal.jobs.feishu.cn |  | 跨境电商
+molbreeding | feishu | 博瑞迪 | molbreeding.jobs.feishu.cn |  | 生物育种
+bluepha | feishu | 蓝晶微生物 | bluepha.jobs.feishu.cn |  | 合成生物
+lizhi | feishu | 荔枝 | lizhi2021.jobs.feishu.cn |  | 音频
+
+# ========== Moka 摩卡（type=moka）==========
+# --- 游戏 ---
+yoka | moka | 游卡 | yokagames | 41939 | 游戏
+eyugame | moka | 鳄游 | eyugame | 47373 | 游戏
+bole | moka | 博乐科技 | bolegames | 37642 | 游戏
+dianhun | moka | 电魂网络 | dianhun | 55952 | 游戏
+pwrd | moka | 完美世界 | pwrd | 140155 | 游戏
+kingnet | moka | 恺英网络 | kingnet | 2247 | 游戏
+shengqu | moka | 盛趣游戏 | shengqu | 4077 | 游戏
+yoozoo | moka | 游族网络 | yoozoo | 91950 | 游戏
+leyuansu | moka | 乐元素 | leyuansu | 2358 | 游戏
+lovegames | moka | 乐府互娱 | lovegames | 21946 | 游戏
+micateam | moka | 散爆网络 | micateam | 142158 | 游戏
+shiyue | moka | 诗悦网络 | shiyuehr | 72054 | 游戏
+shangyou | moka | 尚游游戏 | shangyou | 42165 | 游戏
+hypergryph | moka | 鹰角网络 | hypergryph | 28713 | 游戏
+ztgame | moka | 中手游 | ztgame | 92438 | 游戏
+# --- 外企中国区 ---
+bayer | moka | 拜耳中国 | bayer | 148387 | 外企
+ey | moka | 安永 | ey | 102474 | 外企
+marriott | moka | 万豪 | marriott | 141002 | 外企
+zeiss | moka | 蔡司 | zeiss | 70004 | 外企
+prada | moka | PRADA | pradagroup | 151069 | 外企
+kpmg | moka | 毕马威 | kpmg | 68240 | 外企
+schneider | moka | 施耐德电气 | se | 98712 | 外企
+bosch | moka | 博世中国 | bosch | 73873 | 外企汽车
+volvo | moka | 沃尔沃汽车 | volvocars | 56034 | 外企汽车
+nestle | moka | 雀巢大中华 | nestlezgc | 91898 | 外企食品
+carlsberg | moka | 嘉士伯 | carlsberg | 37541 | 外企食品
+garena | moka | Garena | garena | 147001 | 外企游戏
+bigo | moka | BIGO | bigo | 37723 | 外企互联网
+shopee | moka | Shopee | shopee | 2962 | 外企电商
+shein | moka | SHEIN希音 | shein | 2933 | 外企电商
+oocl | moka | 东方海外 | oocl | 44732 | 外企物流
+# --- 半导体 ---
+biren | moka | 壁仞科技 | biren | 44726 | 半导体
+tecorigin | moka | 太初 | tecorigin | 47401 | 半导体
+3peak | moka | 思瑞浦 | 3peakic | 67894 | 半导体
+cambricon | moka | 寒武纪 | cambricon | 44201 | 半导体
+huahong | moka | 华虹集团 | huahong | 70000 | 半导体
+# --- AI / 大模型 / 量化 ---
+highflyer | moka | 幻方量化 | high-flyer | 140576 | AI量化
+stepfun | moka | 阶跃星辰 | step | 94904 | 大模型
+baai | moka | 智源研究院 | baai | 42174 | AI科研
+smartmore | moka | 思谋科技 | smartmore | 40505 | AI
+meshy | moka | Meshy太极图形 | taichi | 148086 | AI
+dolphindb | moka | DolphinDB | dolphindb | 37785 | 数据库
+threatbook | moka | 微步在线 | threatbook | 39679 | AI安全
+jiukun | moka | 九坤投资 | jhlfund | 46283 | 量化私募
+lingjun | moka | 灵均投资 | lingjuninvest | 46355 | 量化私募
+sixie | moka | 思勰投资 | sixiecapital | 42909 | 量化私募
+tianyan | moka | 天演资本 | tianyancapital | 98901 | 量化私募
+alpha2 | moka | Alpha2Fund | alpha2fund | 151123 | 量化私募
+# --- 新能源 / 车 / 储能 / 光伏 ---
+voyah | moka | 岚图汽车 | voyah | 146292 | 新能源车
+geely | moka | 吉利 | geely | 102042 | 车企
+qianli | moka | 千里科技 | qianli1 | 147197 | 智驾
+ninebot | moka | 九号公司 | ninebot | 45627 | 出行
+yanfeng | moka | 延锋 | yanfeng | 45086 | 汽车零部件
+joyson | moka | 均胜集团 | joyson | 94310 | 汽车零部件
+hithium | moka | 海辰储能 | hithium | 141287 | 储能
+jinko | moka | 晶科能源 | jinkosolar | 41896 | 光伏
+envision | moka | 远景能源 | envisiongroup | 43123 | 新能源
+solax | moka | 艾罗能源 | solaxpower | 151400 | 光伏储能
+trina | moka | 天合光能 | trinasolar | 39871 | 光伏
+sanhua | moka | 三花智控 | zjshc | 56208 | 汽零
+synland | moka | 时代新安 | synland | 58041 | 电池
+saj | moka | 赛智SAJ | saj | 54336 | 电气
+# --- 生物医药 / 消费 / 互联网 / 金融 ---
+smoore | moka | 思摩尔国际 | smoore | 126055 | 雾化
+sansongshu | moka | 三只松鼠 | 3songshu | 457 | 食品
+anta | moka | 安踏 | antahr | 142914 | 服饰
+guming | moka | 古茗 | guming | 39377 | 茶饮
+wantai | moka | 万泰生物 | ystwt | 97880 | 生物医药
+gstzy | moka | 固生堂 | gstzy | 147395 | 医疗
+didi | moka | 滴滴 | didiglobal | 96064 | 互联网
+zhihu | moka | 知乎 | zhihu | 68321 | 互联网
+xunlei | moka | 迅雷 | xunlei | 26599 | 互联网
+zuoyebang | moka | 作业帮 | zuoyebang | 41328 | 教育
+sina | moka | 新浪微博 | sina | 43535 | 互联网
+manbang | moka | 满帮集团 | manbang | 46269 | 物流
+zijin | moka | 紫金矿业 | zijinmining | 140688 | 矿业
+pg | moka | 宝洁 | pg | 92352 | 快消
+zte | moka | 中兴 | zte | 47588 | 通信
+eastmoney | moka | 东方财富 | eastmoney | 57970 | 金融科技
+westlake | moka | 西湖大学 | westlake | 43525 | 科研
+
+# ========== 北森招聘（type=beisen · {slug}.zhiye.com 公开接口 GetJobAdPageList）==========
+# arg1=slug（门户子域名，即 {slug}.zhiye.com）；arg2 留空。加公司=找到真实 slug 加一行。
+# 多为飞书/Moka 上没有的大型制造业/车企/家电/装备巨头。2026-06-27 实测直出。
+dreame | beisen | 追觅 | dreame |  | 智能清洁/造车/机器人
+chery | beisen | 奇瑞汽车 | chery |  | 车企
+leapmotor | beisen | 零跑汽车 | leapmotor |  | 新势力车企
+boe | beisen | 京东方 | boe |  | 显示面板
+sany | beisen | 三一集团 | sany |  | 工程机械/机器人

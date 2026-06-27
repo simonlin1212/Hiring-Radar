@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 抓取输出/数据 —— 不提交（只开源工具，不分发抓来的数据）
+*.json
+out/
+output/
+data/
+*.csv
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
