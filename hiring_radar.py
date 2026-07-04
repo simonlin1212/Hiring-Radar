@@ -792,6 +792,16 @@ def _load_company_seeds():
             LOCAL_PARSERS[key] = {"command": "python3", "args": ["parsers/beisen.py", a1, company, "{keyword}"]}
 
 
+def _safe_slug(kind, slug):
+    """显式 ATS 旗标的 slug 只允许单段 [A-Za-z0-9_-]:防在 slug 里塞 / . @ : 把请求主机
+    改写到任意域名(SSRF)。与 auto-probe 路径(第 751 行 re.sub)一致,且照 --workday 的
+    reject 风格:非法直接退出而非静默改写,避免误伤合法 slug(如 SmartRecruiters 大小写)。"""
+    slug = (slug or "").strip()
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", slug):
+        sys.exit(f"[x] --{kind} slug 非法:只允许字母/数字/连字符/下划线(防 SSRF),收到:{slug!r}")
+    return slug
+
+
 def main():
     _load_company_seeds()
     ap = argparse.ArgumentParser(description="招聘信号雷达 — 读公司 ATS 直出在招岗位(全字段)")
@@ -831,11 +841,11 @@ def main():
 
     explicit = None
     if a.greenhouse:
-        explicit = ("greenhouse", a.greenhouse)
+        explicit = ("greenhouse", _safe_slug("greenhouse", a.greenhouse))
     elif a.ashby:
-        explicit = ("ashby", a.ashby)
+        explicit = ("ashby", _safe_slug("ashby", a.ashby))
     elif a.lever:
-        explicit = ("lever", a.lever)
+        explicit = ("lever", _safe_slug("lever", a.lever))
     elif a.workday:
         parts = a.workday.split(",")
         if len(parts) != 3:
@@ -844,15 +854,15 @@ def main():
             sys.exit("[x] --workday host 应为 *.myworkdayjobs.com 域名（防 SSRF）")
         explicit = ("workday", parts[0].strip(), parts[1].strip(), parts[2].strip())
     elif a.smartrecruiters:
-        explicit = ("smartrecruiters", a.smartrecruiters)
+        explicit = ("smartrecruiters", _safe_slug("smartrecruiters", a.smartrecruiters))
     elif a.recruitee:
-        explicit = ("recruitee", a.recruitee)
+        explicit = ("recruitee", _safe_slug("recruitee", a.recruitee))
     elif a.breezy:
-        explicit = ("breezy", a.breezy)
+        explicit = ("breezy", _safe_slug("breezy", a.breezy))
     elif a.bamboohr:
-        explicit = ("bamboohr", a.bamboohr)
+        explicit = ("bamboohr", _safe_slug("bamboohr", a.bamboohr))
     elif a.personio:
-        explicit = ("personio", a.personio)
+        explicit = ("personio", _safe_slug("personio", a.personio))
 
     first_kw = a.keyword.split(",")[0].strip() if a.keyword else ""
     if a.board:
