@@ -16,6 +16,15 @@
   <img src="https://img.shields.io/badge/依赖-纯标准库-lightgrey.svg" alt="stdlib">
 </p>
 
+<p align="center">
+  <a href="#这是什么">这是什么</a> ·
+  <a href="#能力-features">能力</a> ·
+  <a href="#快速开始">快速开始</a> ·
+  <a href="#输出字段">输出字段</a> ·
+  <a href="#工作原理">工作原理</a> ·
+  <a href="#覆盖来源">覆盖来源</a>
+</p>
+
 ---
 
 ## 这是什么
