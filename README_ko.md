@@ -1,6 +1,8 @@
+<p align="center"><a href="README.md">简体中文</a> | <a href="README_en.md">English</a> | <b>한국어</b> | <a href="README_es.md">Español</a> | <a href="README_fr.md">Français</a> | <a href="README_de.md">Deutsch</a> | <a href="README_pt.md">Português</a> | <a href="README_ru.md">Русский</a> | <a href="README_ar.md">العربية</a></p>
+
 # Hiring Radar
 
-[中文](README.md) · [English](README.en.md) · **한국어** · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Português](README.pt.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
+[中文](README.md) · [English](README_en.md) · **한국어** · [Español](README_es.md) · [Français](README_fr.md) · [Deutsch](README_de.md) · [Português](README_pt.md) · [Русский](README_ru.md) · [العربية](README_ar.md)
 
 <p align="center">
   <b>글로벌 채용 시장을 위한 AI 레이더 — 전 세계와 중국의 채용 공고를 스캔하여 구직과 산업 신호 포착에 활용.</b>
@@ -34,7 +36,7 @@
 
 > ⚠️ 기업이 **스스로 공개한 채용 공고**만 읽습니다 — 이력서/개인정보는 절대, 로그인 필요 콘텐츠도 안 됩니다. 자가 사용·저빈도·예의 있는 방문자로. [책임 있는 사용](#-책임-있는-사용--컴플라이언스) 참고.
 
-## ✨ 기능
+## 기능
 
 | 기능 | 설명 |
 |---|---|
@@ -47,7 +49,7 @@
 | **데⁠이⁠터⁠ ⁠주⁠도** | 중국 회사 목록은 시드 테이블 `companies.seed` — **회사 추가 = 한 줄, 코드 불필요** |
 | **순⁠수⁠ ⁠표⁠준⁠ ⁠라⁠이⁠브⁠러⁠리** | 단일 진입 스크립트, 의존성 0(Moka 파싱만 `pycryptodome` 필요), 모든 `python3`에서 실행 |
 
-## 🚀 빠른 시작
+## 빠른 시작
 
 ```bash
 git clone https://github.com/simonlin1212/Hiring-Radar.git
@@ -79,13 +81,13 @@ python3 hiring_radar.py --local zhipu --keyword LLM --json > out.json
 
 **공통 옵션**: `--keyword` · `--recent-days N` · `--limit N` · `--json` · `--list` · `--debug` · `--script <path>`
 
-## 📋 출력 필드
+## 출력 필드
 
 `title · company · dept · team · location · remote · type · date · date_updated · req_id · comp(연봉) · jd(전체) · url · apply_url · id` (15개 필드)
 
 GH / Ashby / Lever / Feishu / Moka / Beisen / 텐센트 / 넷이즈 / JD / 바이두는 보통 전체 JD 포함; Workday와 일부 Moka 테넌트는 목록 수준만(제목/부서/근무지/날짜). `--json`은 전체 출력.
 
-## 🌐 소스
+## 소스
 
 **글로벌 ATS(회사명 auto-probe — 9개 시스템)**
 Greenhouse · Ashby · Lever · Workday · SmartRecruiters · Recruitee · Breezy · BambooHR · Personio
@@ -104,7 +106,7 @@ RemoteOK · Remotive · WeWorkRemotely · WorkingNomads · `all`
 
 > 전체 목록: `python3 hiring_radar.py --list`
 
-## ➕ 회사 추가 = 한 줄 추가(코드 불필요)
+## 회사 추가 = 한 줄 추가(코드 불필요)
 
 중국 회사 목록은 `parsers/companies.seed`(파이프 `|` 구분)에 있고 시작 시 자동 로드됩니다. 한 줄만 추가:
 
@@ -116,7 +118,7 @@ key | beisen | 회사 | slug             # 포털 {slug}.zhiye.com, 예: dreame
 
 완전히 새로운 소스(파서 작성)는 [CONTRIBUTING.md](CONTRIBUTING.md) 참고.
 
-## 📈 산업 신호(부)
+## 산업 신호(부)
 
 채용은 **선행 지표**입니다. 예:
 
@@ -125,7 +127,7 @@ key | beisen | 회사 | slug             # 포털 {slug}.zhiye.com, 예: dreame
 
 > ⚠️ **채용 ≠ 생산량.** 공고는 "투입"이지 "산출"이 아니며 수율/램프업/공급망이 그 사이에 있습니다. 투자 조언이 아닌 신호로 취급하세요.
 
-## ⚖️ 책임 있는 사용 / 컴플라이언스
+## 책임 있는 사용 / 컴플라이언스
 
 **개인 / 연구용 · 로컬 · 오픈소스** 도구입니다. 책임 있게 사용하세요:
 
@@ -134,7 +136,7 @@ key | beisen | 회사 | slug             # 포털 {slug}.zhiye.com, 예: dreame
 - **로컬 전용**: 호스팅/업로드/서버 없음. 데이터 재배포는 본인 책임 하에 컴플라이언스 평가.
 - **저빈도·예의 있는 방문자**; 상업적 재판매 금지. "공개되어 있음" ≠ "자유롭게 수집·재배포 가능".
 
-## ⚠️ 면책
+## 면책
 
 1. **데이터는 당신이 통제.** 로컬 실행, 수집·업로드 없음.
 2. **제3자 약관 준수.** 각 채용 플랫폼 ToS 준수, 스팸/과부하 금지.
@@ -142,13 +144,7 @@ key | beisen | 회사 | slug             # 포털 {slug}.zhiye.com, 예: dreame
 
 [MIT 라이선스](LICENSE) 하에 "있는 그대로" 제공, 어떠한 보증도 없음.
 
-## 🙋 저자
-
-**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
-
-전 세계와 중국 기업의 공식 채용 공고를 한곳에 모으는 로컬 도구. 회사/소스 추가 PR 환영([CONTRIBUTING.md](CONTRIBUTING.md)).
-
-## ☕ 후원
+## 후원
 
 이 도구가 시간을 절약해 주었다면 커피 한잔은 감사히 받겠습니다.
 
@@ -156,6 +152,10 @@ key | beisen | 회사 | slug             # 포털 {slug}.zhiye.com, 예: dreame
   <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
 </p>
 
-## 📄 License
+## License
 
 [MIT](LICENSE)
+
+전 세계와 중국 기업의 공식 채용 공고를 한곳에 모으는 로컬 도구. 회사/소스 추가 PR 환영([CONTRIBUTING.md](CONTRIBUTING.md)).
+
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)

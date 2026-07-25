@@ -1,6 +1,8 @@
+<p align="center"><a href="README.md">简体中文</a> | <a href="README_en.md">English</a> | <a href="README_ko.md">한국어</a> | <a href="README_es.md">Español</a> | <a href="README_fr.md">Français</a> | <a href="README_de.md">Deutsch</a> | <a href="README_pt.md">Português</a> | <b>Русский</b> | <a href="README_ar.md">العربية</a></p>
+
 # Hiring Radar
 
-[中文](README.md) · [English](README.en.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Português](README.pt.md) · **Русский** · [العربية](README.ar.md)
+[中文](README.md) · [English](README_en.md) · [한국어](README_ko.md) · [Español](README_es.md) · [Français](README_fr.md) · [Deutsch](README_de.md) · [Português](README_pt.md) · **Русский** · [العربية](README_ar.md)
 
 <p align="center">
   <b>ИИ-радар мирового рынка труда — сканирует вакансии по всему миру и в Китае, для поиска работы и отраслевых сигналов.</b>
@@ -34,7 +36,7 @@ ATS, которые используют компании (Greenhouse / Ashby / 
 
 > ⚠️ Читает **вакансии, которые компании публикуют сами** — никогда резюме/персональные данные, никогда контент за логином. Личное использование, низкая частота, вежливый посетитель. См. [Ответственное использование](#-ответственное-использование--соответствие).
 
-## ✨ Возможности
+## Возможности
 
 | Возможность | Описание |
 |---|---|
@@ -47,7 +49,7 @@ ATS, которые используют компании (Greenhouse / Ashby / 
 | **Управляется данными** | Список китайских компаний — это seed-таблица `companies.seed`: **добавить компанию = одна строка, без кода** |
 | **Только stdlib** | Один входной скрипт, ноль зависимостей (только Moka требует `pycryptodome`), работает на любом `python3` |
 
-## 🚀 Быстрый старт
+## Быстрый старт
 
 ```bash
 git clone https://github.com/simonlin1212/Hiring-Radar.git
@@ -79,13 +81,13 @@ python3 hiring_radar.py --local zhipu --keyword LLM --json > out.json
 
 **Общие опции**: `--keyword` · `--recent-days N` · `--limit N` · `--json` · `--list` · `--debug` · `--script <path>`
 
-## 📋 Поля вывода
+## Поля вывода
 
 `title · company · dept · team · location · remote · type · date · date_updated · req_id · comp(зарплата) · jd(полное) · url · apply_url · id` (15 полей)
 
 GH / Ashby / Lever / Feishu / Moka / Beisen / Tencent / NetEase / JD / Baidu обычно содержат полное описание; Workday и отдельные тенанты Moka — только на уровне списка (название/отдел/локация/дата). `--json` выдаёт всё.
 
-## 🌐 Источники
+## Источники
 
 **Международные ATS (авто-проверка по имени — 9 систем)**
 Greenhouse · Ashby · Lever · Workday · SmartRecruiters · Recruitee · Breezy · BambooHR · Personio
@@ -104,7 +106,7 @@ RemoteOK · Remotive · WeWorkRemotely · WorkingNomads · `all`
 
 > Полный список: `python3 hiring_radar.py --list`
 
-## ➕ Добавить компанию = добавить строку (без кода)
+## Добавить компанию = добавить строку (без кода)
 
 Список китайских компаний — в `parsers/companies.seed` (разделитель `|`), загружается при старте. Добавьте строку:
 
@@ -116,7 +118,7 @@ key | beisen | Компания | slug             # портал {slug}.zhiye.c
 
 Для совершенно нового источника (написать парсер) см. [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## 📈 Отраслевой сигнал (второстепенное)
+## Отраслевой сигнал (второстепенное)
 
 Найм — это **опережающий индикатор**. Например:
 
@@ -125,7 +127,7 @@ key | beisen | Компания | slug             # портал {slug}.zhiye.c
 
 > ⚠️ **Найм ≠ выпуск.** Вакансии — это «входы», а не «выходы»; между ними выход годных/выход на объём/цепочка поставок. Воспринимайте как сигнал, а не инвестиционный совет.
 
-## ⚖️ Ответственное использование / Соответствие
+## Ответственное использование / Соответствие
 
 **Личный / исследовательский, локальный + open-source** инструмент. Используйте ответственно:
 
@@ -134,7 +136,7 @@ key | beisen | Компания | slug             # портал {slug}.zhiye.c
 - **Только локально**: без хостинга / загрузки / сервера. При перепубликации данных оцените соответствие самостоятельно.
 - **Низкая частота, вежливый посетитель**; без коммерческой перепродажи. «Публично видимо» ≠ «свободно агрегировать и перепубликовывать».
 
-## ⚠️ Отказ от ответственности
+## Отказ от ответственности
 
 1. **Вы контролируете свои данные.** Работает локально; ничего не собирает и не отправляет.
 2. **Вы соблюдаете условия третьих сторон.** Соблюдайте ToS каждой платформы; без спама и перегрузки.
@@ -142,13 +144,7 @@ key | beisen | Компания | slug             # портал {slug}.zhiye.c
 
 Под [лицензией MIT](LICENSE) «как есть», без каких-либо гарантий.
 
-## 🙋 Автор
-
-**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
-
-Локальный инструмент, агрегирующий официальные открытые вакансии компаний по всему миру и в Китае. PR для добавления компаний / источников приветствуются (см. [CONTRIBUTING.md](CONTRIBUTING.md)).
-
-## ☕ Поддержка
+## Поддержка
 
 Если этот инструмент сэкономил ваше время, буду благодарен за чашку кофе.
 
@@ -156,6 +152,10 @@ key | beisen | Компания | slug             # портал {slug}.zhiye.c
   <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
 </p>
 
-## 📄 License
+## License
 
 [MIT](LICENSE)
+
+Локальный инструмент, агрегирующий официальные открытые вакансии компаний по всему миру и в Китае. PR для добавления компаний / источников приветствуются (см. [CONTRIBUTING.md](CONTRIBUTING.md)).
+
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)

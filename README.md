@@ -1,6 +1,6 @@
-# Hiring Radar · 招聘雷达
+<p align="center"><b>简体中文</b> | <a href="README_en.md">English</a> | <a href="README_ko.md">한국어</a> | <a href="README_es.md">Español</a> | <a href="README_fr.md">Français</a> | <a href="README_de.md">Deutsch</a> | <a href="README_pt.md">Português</a> | <a href="README_ru.md">Русский</a> | <a href="README_ar.md">العربية</a></p>
 
-**中文** · [English](README.en.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Português](README.pt.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
+# Hiring Radar · 招聘雷达
 
 <p align="center">
   <b>AI 驱动的全球招聘信息雷达 —— 扫描全球与中国的在招岗位，用来找工作、读产业风向。</b><br>
@@ -35,7 +35,7 @@
 
 > ⚠️ 它读的是**企业主动公开的岗位信息**，不抓个人简历、不碰需要登录的内容。自用、低频、做个有礼貌的访客。详见 [使用边界 / 合规](#-使用边界--合规)。
 
-## ✨ 能力 Features
+## 能力 Features
 
 | 能力 | 说明 |
 |---|---|
@@ -48,7 +48,7 @@
 | **数⁠据⁠驱⁠动⁠扩⁠展** | 中国公司清单是一张种子表 `companies.seed`，**加公司=加一行，零代码** |
 | **纯⁠标⁠准⁠库** | 单入口脚本，零依赖（仅 Moka 解析需 `pycryptodome`），任意 `python3` 可跑 |
 
-## 🚀 快速开始
+## 快速开始
 
 ```bash
 git clone https://github.com/simonlin1212/Hiring-Radar.git
@@ -80,13 +80,13 @@ python3 hiring_radar.py --local zhipu --keyword 大模型 --json > out.json
 
 **通用参数**：`--keyword` · `--recent-days N` · `--limit N` · `--json` · `--list` · `--debug`（排错）· `--script <path>`（临时跑某个 parser）
 
-## 📋 输出字段
+## 输出字段
 
 `title · company · dept · team · location · remote · type · date · date_updated · req_id · comp(薪资) · jd(完整) · url · apply_url · id`（共 15 字段）
 
 GH / Ashby / Lever / 飞书 / Moka / 北森 / 腾讯 / 网易 / 京东 / 百度 一般含完整 JD；Workday 与个别 Moka 租户列表无 JD（仅标题/部门/地点/日期）。`--json` 出全量。
 
-## ⚙️ 工作原理
+## 工作原理
 
 ```
 一个公司名 / 赛道关键词
@@ -112,7 +112,7 @@ GH / Ashby / Lever / 飞书 / Moka / 北森 / 腾讯 / 网易 / 京东 / 百度 
 
 > **关于 Moka（诚实说明）**：Moka 系公司的接口对响应做了一层轻量前端混淆（AES-128-CBC，密钥与 IV 都随其公开前端下发）。本工具用这些**前端自带的公开值**还原出与浏览器所见**完全相同的公开岗位列表**——不破解登录、不绕鉴权。这层混淆并非访问控制，但严格说属「还原前端处理」，比纯读 JSON 略灰，**仅供本地研究自用、自担风险**。想要最干净的合规姿态，删 `companies.seed` 里所有 `moka` 行 + 主程序 `LOCAL_PARSERS` 内置的 `yostar`/`tesla-cn` 两行即可，其余来源不受影响。
 
-## 🌐 覆盖来源
+## 覆盖来源
 
 **全球 ATS（按公司名 auto-probe，支持 9 大系统）**
 Greenhouse · Ashby · Lever · Workday · SmartRecruiters · Recruitee · Breezy · BambooHR · Personio
@@ -131,7 +131,7 @@ RemoteOK · Remotive · WeWorkRemotely · WorkingNomads · `all`（合并）
 
 > 完整名单：`python3 hiring_radar.py --list`
 
-## ➕ 加公司 = 加一行（零代码）
+## 加公司 = 加一行（零代码）
 
 中国公司清单在 `parsers/companies.seed`（管道 `|` 分隔），程序启动自动加载。新增一家只加一行：
 
@@ -143,7 +143,7 @@ key | beisen | 公司名 | slug                  # 门户 {slug}.zhiye.com，如
 
 接一个**全新数据源**（写个新 parser）见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-## 📈 产业信号应用（小）
+## 产业信号应用（小）
 
 招聘是**领先指标**：公司在哪扩产、招什么方向、招到哪个阶段，往往比财报早几个月暴露战略。例如——
 
@@ -152,7 +152,7 @@ key | beisen | 公司名 | slug                  # 门户 {slug}.zhiye.com，如
 
 > ⚠️ **招聘 ≠ 产量**：岗位是「投入」非「产出」，中间隔着良率/爬坡/供应链；「在招」也可能是储备或反信号。结论当**信号参考**，非投资建议。
 
-## 🗂️ 项目结构
+## 项目结构
 
 ```
 Hiring-Radar/
@@ -167,13 +167,13 @@ Hiring-Radar/
 ├── requirements.txt · CONTRIBUTING.md · CHANGELOG.md · LICENSE
 ```
 
-## 🧰 技术栈与依赖
+## 技术栈与依赖
 
 - **Python 3.8+**，核心纯标准库（urllib / json / re / ssl / argparse / xml.etree）
 - **`pycryptodome`**：仅 Moka 系解析需要（`pip install pycryptodome`）
 - 联网即可（部分国际站点可能需代理）；SSL 默认验证证书，拦截式代理可设 `HIRING_RADAR_INSECURE=1`
 
-## ⚖️ 使用边界 / 合规
+## 使用边界 / 合规
 
 这是一个 **个人 / 研究自用 + 开源** 的本地工具。请负责任地使用：
 
@@ -182,7 +182,7 @@ Hiring-Radar/
 - **仅本地运行**：不含任何托管 / 上传 / 服务端；`--json` 只落到你本地。若把数据二次发布，需你自行评估合规。
 - **低频、当个有礼貌的访客**；不商用转卖数据。「公开可见」≠「可随意聚合再发布」——大规模抓取并公开转载他人数据在多地（含中国《反不正当竞争法》判例）可能构成不正当竞争。
 
-## ⚠️ 免责声明
+## 免责声明
 
 1. **你掌控你的数据。** 工具在你本地运行，不收集、不上传任何数据。
 2. **你遵守第三方条款。** 须遵守你访问的各招聘平台 ToS；不得用本工具骚扰雇主或冲击其系统。
@@ -190,13 +190,7 @@ Hiring-Radar/
 
 本软件以 [MIT 许可](LICENSE) 「按现状」提供，不作任何担保。
 
-## 🙋 作者
-
-**作者：** Simon 林 · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · 邮箱：[simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
-
-一个把全球与中国公司官方在招岗位聚合到一处的本地工具。欢迎 PR 补充更多公司 / 数据源（见 [CONTRIBUTING.md](CONTRIBUTING.md)）。
-
-## ☕ 赞赏
+## 赞赏
 
 如果这个工具帮到了你，欢迎请作者喝杯咖啡。
 
@@ -204,6 +198,10 @@ Hiring-Radar/
   <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
 </p>
 
-## 📄 License
+## License
 
 [MIT](LICENSE)
+
+一个把全球与中国公司官方在招岗位聚合到一处的本地工具。欢迎 PR 补充更多公司 / 数据源（见 [CONTRIBUTING.md](CONTRIBUTING.md)）。
+
+**作者：** Simon 林 · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · 邮箱：[simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)

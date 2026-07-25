@@ -1,6 +1,8 @@
+<p align="center"><a href="README.md">简体中文</a> | <a href="README_en.md">English</a> | <a href="README_ko.md">한국어</a> | <a href="README_es.md">Español</a> | <a href="README_fr.md">Français</a> | <a href="README_de.md">Deutsch</a> | <a href="README_pt.md">Português</a> | <a href="README_ru.md">Русский</a> | <b>العربية</b></p>
+
 # Hiring Radar
 
-[中文](README.md) · [English](README.en.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Português](README.pt.md) · [Русский](README.ru.md) · **العربية**
+[中文](README.md) · [English](README_en.md) · [한국어](README_ko.md) · [Español](README_es.md) · [Français](README_fr.md) · [Deutsch](README_de.md) · [Português](README_pt.md) · [Русский](README_ru.md) · **العربية**
 
 <p align="center">
   <b>رادار مدعوم بالذكاء الاصطناعي لسوق العمل العالمي — يمسح الوظائف حول العالم وفي الصين، للبحث عن عمل ورصد إشارات القطاع.</b>
@@ -34,7 +36,7 @@
 
 > ⚠️ يقرأ **إعلانات الوظائف التي تنشرها الشركات بنفسها** — لا سِيَر ذاتية/بيانات شخصية أبدًا، ولا محتوى خلف تسجيل الدخول. استخدام شخصي، تردد منخفض، زائر مهذّب.
 
-## ✨ المزايا
+## المزايا
 
 | الميزة | الوصف |
 |---|---|
@@ -47,7 +49,7 @@
 | **مُوجَّه بالبيانات** | قائمة الشركات الصينية جدول بذور `companies.seed` — **إضافة شركة = سطر واحد بلا كود** |
 | **مكتبة قياسية فقط** | سكربت بنقطة دخول واحدة، بلا تبعيات (Moka فقط يحتاج `pycryptodome`)، يعمل على أي `python3` |
 
-## 🚀 البدء السريع
+## البدء السريع
 
 ```bash
 git clone https://github.com/simonlin1212/Hiring-Radar.git
@@ -79,13 +81,13 @@ python3 hiring_radar.py --local zhipu --keyword LLM --json > out.json
 
 **خيارات عامة**: `--keyword` · `--recent-days N` · `--limit N` · `--json` · `--list` · `--debug` · `--script <path>`
 
-## 📋 حقول المخرجات
+## حقول المخرجات
 
 `title · company · dept · team · location · remote · type · date · date_updated · req_id · comp(الراتب) · jd(كامل) · url · apply_url · id` (١٥ حقلًا)
 
 عادةً تتضمن GH / Ashby / Lever / Feishu / Moka / Beisen / Tencent / NetEase / JD / Baidu الوصف الكامل؛ أما Workday وبعض مستأجري Moka فعلى مستوى القائمة فقط (العنوان/القسم/الموقع/التاريخ). `--json` يُخرج كل شيء.
 
-## 🌐 المصادر
+## المصادر
 
 **أنظمة ATS الدولية (فحص تلقائي بالاسم — ٩ أنظمة)**
 Greenhouse · Ashby · Lever · Workday · SmartRecruiters · Recruitee · Breezy · BambooHR · Personio
@@ -104,7 +106,7 @@ RemoteOK · Remotive · WeWorkRemotely · WorkingNomads · `all`
 
 > القائمة الكاملة: `python3 hiring_radar.py --list`
 
-## ➕ إضافة شركة = إضافة سطر (بلا كود)
+## إضافة شركة = إضافة سطر (بلا كود)
 
 قائمة الشركات الصينية في `parsers/companies.seed` (مفصولة بـ `|`)، تُحمَّل عند البدء. أضف سطرًا:
 
@@ -116,7 +118,7 @@ key | beisen | الشركة | slug             # البوابة {slug}.zhiye.com
 
 لإضافة مصدر جديد كليًا (كتابة محلّل) راجع [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## 📈 إشارة القطاع (ثانوي)
+## إشارة القطاع (ثانوي)
 
 التوظيف **مؤشر مبكر**. مثلًا:
 
@@ -125,7 +127,7 @@ key | beisen | الشركة | slug             # البوابة {slug}.zhiye.com
 
 > ⚠️ **التوظيف ≠ الإنتاج.** الوظائف «مدخلات» لا «مخرجات»؛ بينهما العائد والتوسّع وسلسلة التوريد. تعامل معها كإشارة لا كنصيحة استثمارية.
 
-## ⚖️ الاستخدام المسؤول / الامتثال
+## الاستخدام المسؤول / الامتثال
 
 أداة **شخصية / بحثية، محلية + مفتوحة المصدر**. استخدمها بمسؤولية:
 
@@ -134,7 +136,7 @@ key | beisen | الشركة | slug             # البوابة {slug}.zhiye.com
 - **محليًا فقط**: بلا استضافة / رفع / خادم. عند إعادة نشر البيانات، قيّم الامتثال بنفسك.
 - **تردد منخفض، زائر مهذّب**؛ بلا إعادة بيع تجاري. «مرئي علنًا» ≠ «حر في التجميع وإعادة النشر».
 
-## ⚠️ إخلاء المسؤولية
+## إخلاء المسؤولية
 
 1. **أنت تتحكم في بياناتك.** يعمل محليًا؛ لا يجمع ولا يرفع شيئًا.
 2. **أنت تلتزم بشروط الأطراف الثالثة.** التزم بشروط كل منصة؛ بلا إزعاج أو إثقال لأنظمتها.
@@ -142,13 +144,7 @@ key | beisen | الشركة | slug             # البوابة {slug}.zhiye.com
 
 مُقدَّمة بموجب [رخصة MIT](LICENSE) «كما هي» دون أي ضمان.
 
-## 🙋 المؤلف
-
-**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
-
-أداة محلية تجمع الوظائف الرسمية المفتوحة من شركات حول العالم وفي الصين. مرحبًا بطلبات الدمج لإضافة شركات / مصادر (راجع [CONTRIBUTING.md](CONTRIBUTING.md)).
-
-## ☕ الدعم
+## الدعم
 
 إذا وفّرت لك هذه الأداة الوقت، فكوب قهوة موضع تقدير.
 
@@ -156,6 +152,10 @@ key | beisen | الشركة | slug             # البوابة {slug}.zhiye.com
   <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
 </p>
 
-## 📄 License
+## License
 
 [MIT](LICENSE)
+
+أداة محلية تجمع الوظائف الرسمية المفتوحة من شركات حول العالم وفي الصين. مرحبًا بطلبات الدمج لإضافة شركات / مصادر (راجع [CONTRIBUTING.md](CONTRIBUTING.md)).
+
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)

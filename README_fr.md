@@ -1,6 +1,8 @@
+<p align="center"><a href="README.md">简体中文</a> | <a href="README_en.md">English</a> | <a href="README_ko.md">한국어</a> | <a href="README_es.md">Español</a> | <b>Français</b> | <a href="README_de.md">Deutsch</a> | <a href="README_pt.md">Português</a> | <a href="README_ru.md">Русский</a> | <a href="README_ar.md">العربية</a></p>
+
 # Hiring Radar
 
-[中文](README.md) · [English](README.en.md) · [한국어](README.ko.md) · [Español](README.es.md) · **Français** · [Deutsch](README.de.md) · [Português](README.pt.md) · [Русский](README.ru.md) · [العربية](README.ar.md)
+[中文](README.md) · [English](README_en.md) · [한국어](README_ko.md) · [Español](README_es.md) · **Français** · [Deutsch](README_de.md) · [Português](README_pt.md) · [Русский](README_ru.md) · [العربية](README_ar.md)
 
 <p align="center">
   <b>Un radar IA pour le marché de l'emploi mondial — il scanne les offres du monde entier et de Chine, pour la recherche d'emploi et les signaux industriels.</b>
@@ -34,7 +36,7 @@ Couverture : **9 grands ATS internationaux + 4 plateformes mondiales d'emploi à
 
 > ⚠️ Il lit **les offres que les entreprises publient elles-mêmes**, jamais de CV/données personnelles, jamais de contenu derrière un login. Usage personnel, basse fréquence, visiteur poli. Voir [Usage responsable](#-usage-responsable--conformité).
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
 | Fonctionnalité | Description |
 |---|---|
@@ -47,7 +49,7 @@ Couverture : **9 grands ATS internationaux + 4 plateformes mondiales d'emploi à
 | **Piloté par les données** | La liste des entreprises chinoises est une table de seed `companies.seed` — **ajouter une entreprise = une ligne, sans code** |
 | **stdlib pur** | Script à point d'entrée unique, zéro dépendance (seul Moka requiert `pycryptodome`), tourne sur tout `python3` |
 
-## 🚀 Démarrage rapide
+## Démarrage rapide
 
 ```bash
 git clone https://github.com/simonlin1212/Hiring-Radar.git
@@ -79,13 +81,13 @@ python3 hiring_radar.py --local zhipu --keyword LLM --json > out.json
 
 **Options communes** : `--keyword` · `--recent-days N` · `--limit N` · `--json` · `--list` · `--debug` · `--script <path>`
 
-## 📋 Champs de sortie
+## Champs de sortie
 
 `title · company · dept · team · location · remote · type · date · date_updated · req_id · comp(salaire) · jd(complète) · url · apply_url · id` (15 champs)
 
 GH / Ashby / Lever / Feishu / Moka / Beisen / Tencent / NetEase / JD / Baidu incluent en général la JD complète ; Workday et certains tenants Moka sont au niveau liste uniquement (titre/service/lieu/date). `--json` émet tout.
 
-## 🌐 Sources
+## Sources
 
 **ATS internationaux (auto-détection par nom — 9 systèmes)**
 Greenhouse · Ashby · Lever · Workday · SmartRecruiters · Recruitee · Breezy · BambooHR · Personio
@@ -104,7 +106,7 @@ RemoteOK · Remotive · WeWorkRemotely · WorkingNomads · `all`
 
 > Liste complète : `python3 hiring_radar.py --list`
 
-## ➕ Ajouter une entreprise = ajouter une ligne (sans code)
+## Ajouter une entreprise = ajouter une ligne (sans code)
 
 La liste des entreprises chinoises est dans `parsers/companies.seed` (séparé par `|`), chargée au démarrage. Ajoutez une ligne :
 
@@ -116,7 +118,7 @@ key | beisen | Entreprise | slug             # portail {slug}.zhiye.com, p. ex. 
 
 Pour une source entièrement nouvelle (écrire un parser), voir [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## 📈 Signal industrie (secondaire)
+## Signal industrie (secondaire)
 
 Le recrutement est un **indicateur avancé**. Par exemple :
 
@@ -125,7 +127,7 @@ Le recrutement est un **indicateur avancé**. Par exemple :
 
 > ⚠️ **Recrutement ≠ production.** Les offres sont des « entrées », pas des « sorties » ; rendement/montée en cadence/chaîne d'appro sont entre les deux. À traiter comme un signal, pas un conseil d'investissement.
 
-## ⚖️ Usage responsable / Conformité
+## Usage responsable / Conformité
 
 Outil **personnel / de recherche, local + open source**. À utiliser de manière responsable :
 
@@ -134,7 +136,7 @@ Outil **personnel / de recherche, local + open source**. À utiliser de manière
 - **Local uniquement** : pas d'hébergement / d'upload / de serveur. Si vous republiez les données, évaluez la conformité vous-même.
 - **Basse fréquence, visiteur poli** ; pas de revente commerciale. « Visible publiquement » ≠ « libre d'agréger et de republier ».
 
-## ⚠️ Avertissement
+## Avertissement
 
 1. **Vous contrôlez vos données.** Tourne en local ; ne collecte ni n'envoie rien.
 2. **Vous respectez les CGU des tiers.** Respectez les ToS de chaque plateforme ; pas de spam ni de surcharge.
@@ -142,13 +144,7 @@ Outil **personnel / de recherche, local + open source**. À utiliser de manière
 
 Sous [licence MIT](LICENSE) « en l'état », sans garantie d'aucune sorte.
 
-## 🙋 Auteur
-
-**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
-
-Un outil local qui agrège les offres officielles d'entreprises du monde entier et de Chine. PRs bienvenues pour ajouter des entreprises / sources (voir [CONTRIBUTING.md](CONTRIBUTING.md)).
-
-## ☕ Soutien
+## Soutien
 
 Si cet outil vous a fait gagner du temps, un café est toujours apprécié.
 
@@ -156,6 +152,10 @@ Si cet outil vous a fait gagner du temps, un café est toujours apprécié.
   <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
 </p>
 
-## 📄 License
+## License
 
 [MIT](LICENSE)
+
+Un outil local qui agrège les offres officielles d'entreprises du monde entier et de Chine. PRs bienvenues pour ajouter des entreprises / sources (voir [CONTRIBUTING.md](CONTRIBUTING.md)).
+
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
