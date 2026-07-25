@@ -192,7 +192,7 @@ Hiring-Radar/
 
 ## 🙋 作者
 
-**Simon 林** · 抖音「Simon林」· 公众号「硅基世纪」
+**作者：** Simon 林 · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · 邮箱：[simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
 
 一个把全球与中国公司官方在招岗位聚合到一处的本地工具。欢迎 PR 补充更多公司 / 数据源（见 [CONTRIBUTING.md](CONTRIBUTING.md)）。
 

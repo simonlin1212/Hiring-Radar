@@ -144,7 +144,7 @@ key | beisen | Компания | slug             # портал {slug}.zhiye.c
 
 ## 🙋 Автор
 
-**Simon Lin** · Douyin: Simon林 · WeChat: 硅基世纪
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
 
 Локальный инструмент, агрегирующий официальные открытые вакансии компаний по всему миру и в Китае. PR для добавления компаний / источников приветствуются (см. [CONTRIBUTING.md](CONTRIBUTING.md)).
 

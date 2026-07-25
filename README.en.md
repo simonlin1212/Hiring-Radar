@@ -192,7 +192,7 @@ Provided under the [MIT License](LICENSE) "as is", without warranty of any kind.
 
 ## 🙋 Author
 
-**Simon Lin** · Douyin: Simon林 · WeChat: 硅基世纪
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
 
 A local tool that aggregates official open positions from companies worldwide and in China. PRs welcome to add more companies / sources (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 

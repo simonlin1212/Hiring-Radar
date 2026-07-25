@@ -144,7 +144,7 @@ Sob [licença MIT](LICENSE) "como está", sem garantia de qualquer tipo.
 
 ## 🙋 Autor
 
-**Simon Lin** · Douyin: Simon林 · WeChat: 硅基世纪
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
 
 Uma ferramenta local que agrega vagas oficiais de empresas do mundo todo e da China. PRs bem-vindos para adicionar mais empresas / fontes (veja [CONTRIBUTING.md](CONTRIBUTING.md)).
 

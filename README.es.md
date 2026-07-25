@@ -144,7 +144,7 @@ Bajo [licencia MIT](LICENSE) "tal cual", sin garantía de ningún tipo.
 
 ## 🙋 Autor
 
-**Simon Lin** · Douyin: Simon林 · WeChat: 硅基世纪
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
 
 Una herramienta local que agrega vacantes oficiales de empresas de todo el mundo y de China. PRs bienvenidos para añadir más empresas / fuentes (ver [CONTRIBUTING.md](CONTRIBUTING.md)).
 

@@ -144,7 +144,7 @@ Sous [licence MIT](LICENSE) « en l'état », sans garantie d'aucune sorte.
 
 ## 🙋 Auteur
 
-**Simon Lin** · Douyin : Simon林 · WeChat : 硅基世纪
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
 
 Un outil local qui agrège les offres officielles d'entreprises du monde entier et de Chine. PRs bienvenues pour ajouter des entreprises / sources (voir [CONTRIBUTING.md](CONTRIBUTING.md)).
 
