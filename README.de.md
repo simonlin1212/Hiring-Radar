@@ -150,7 +150,11 @@ Ein lokales Tool, das offizielle offene Stellen von Unternehmen weltweit und in 
 
 ## ☕ Unterstützung
 
-Wenn dieses Tool Ihnen Zeit gespart hat, würde ich mich über einen Kaffee freuen — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+Wenn dieses Tool Ihnen Zeit gespart hat, würde ich mich über einen Kaffee freuen.
+
+<p align="center">
+  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
+</p>
 
 ## 📄 License
 

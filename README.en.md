@@ -198,7 +198,11 @@ A local tool that aggregates official open positions from companies worldwide an
 
 ## ☕ Support
 
-If this tool saved you time, a coffee is appreciated — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+If this tool saved you time, a coffee is appreciated.
+
+<p align="center">
+  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
+</p>
 
 ## 📄 License
 

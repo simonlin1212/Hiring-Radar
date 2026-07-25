@@ -150,7 +150,11 @@ key | beisen | الشركة | slug             # البوابة {slug}.zhiye.com
 
 ## ☕ الدعم
 
-إذا وفّرت لك هذه الأداة الوقت، فكوب قهوة موضع تقدير — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+إذا وفّرت لك هذه الأداة الوقت، فكوب قهوة موضع تقدير.
+
+<p align="center">
+  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
+</p>
 
 ## 📄 License
 

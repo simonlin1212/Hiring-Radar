@@ -150,7 +150,11 @@ key | beisen | Компания | slug             # портал {slug}.zhiye.c
 
 ## ☕ Поддержка
 
-Если этот инструмент сэкономил ваше время, буду благодарен за чашку кофе — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+Если этот инструмент сэкономил ваше время, буду благодарен за чашку кофе.
+
+<p align="center">
+  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
+</p>
 
 ## 📄 License
 

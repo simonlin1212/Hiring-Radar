@@ -150,7 +150,11 @@ key | beisen | 회사 | slug             # 포털 {slug}.zhiye.com, 예: dreame
 
 ## ☕ 후원
 
-이 도구가 시간을 절약해 주었다면 커피 한잔은 감사히 받겠습니다 — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+이 도구가 시간을 절약해 주었다면 커피 한잔은 감사히 받겠습니다.
+
+<p align="center">
+  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
+</p>
 
 ## 📄 License
 

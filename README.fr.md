@@ -150,7 +150,11 @@ Un outil local qui agrège les offres officielles d'entreprises du monde entier 
 
 ## ☕ Soutien
 
-Si cet outil vous a fait gagner du temps, un café est toujours apprécié — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+Si cet outil vous a fait gagner du temps, un café est toujours apprécié.
+
+<p align="center">
+  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
+</p>
 
 ## 📄 License
 

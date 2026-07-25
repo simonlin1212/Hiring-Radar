@@ -150,7 +150,11 @@ Una herramienta local que agrega vacantes oficiales de empresas de todo el mundo
 
 ## ☕ Soporte
 
-Si esta herramienta te ahorró tiempo, un café es bienvenido — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+Si esta herramienta te ahorró tiempo, un café es bienvenido.
+
+<p align="center">
+  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
+</p>
 
 ## 📄 License
 
