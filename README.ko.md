@@ -148,6 +148,10 @@ key | beisen | 회사 | slug             # 포털 {slug}.zhiye.com, 예: dreame
 
 전 세계와 중국 기업의 공식 채용 공고를 한곳에 모으는 로컬 도구. 회사/소스 추가 PR 환영([CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## ☕ 후원
+
+이 도구가 시간을 절약해 주었다면 커피 한잔은 감사히 받겠습니다 — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+
 ## 📄 License
 
 [MIT](LICENSE)

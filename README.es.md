@@ -148,6 +148,10 @@ Bajo [licencia MIT](LICENSE) "tal cual", sin garantía de ningún tipo.
 
 Una herramienta local que agrega vacantes oficiales de empresas de todo el mundo y de China. PRs bienvenidos para añadir más empresas / fuentes (ver [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## ☕ Soporte
+
+Si esta herramienta te ahorró tiempo, un café es bienvenido — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+
 ## 📄 License
 
 [MIT](LICENSE)

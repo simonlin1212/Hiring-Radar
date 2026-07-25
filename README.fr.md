@@ -148,6 +148,10 @@ Sous [licence MIT](LICENSE) « en l'état », sans garantie d'aucune sorte.
 
 Un outil local qui agrège les offres officielles d'entreprises du monde entier et de Chine. PRs bienvenues pour ajouter des entreprises / sources (voir [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## ☕ Soutien
+
+Si cet outil vous a fait gagner du temps, un café est toujours apprécié — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+
 ## 📄 License
 
 [MIT](LICENSE)

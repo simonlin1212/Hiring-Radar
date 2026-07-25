@@ -196,6 +196,10 @@ Hiring-Radar/
 
 一个把全球与中国公司官方在招岗位聚合到一处的本地工具。欢迎 PR 补充更多公司 / 数据源（见 [CONTRIBUTING.md](CONTRIBUTING.md)）。
 
+## ☕ 赞赏
+
+如果这个工具帮到了你，欢迎请作者喝杯咖啡 —— [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212)。
+
 ## 📄 License
 
 [MIT](LICENSE)

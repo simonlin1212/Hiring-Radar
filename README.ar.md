@@ -148,6 +148,10 @@ key | beisen | الشركة | slug             # البوابة {slug}.zhiye.com
 
 أداة محلية تجمع الوظائف الرسمية المفتوحة من شركات حول العالم وفي الصين. مرحبًا بطلبات الدمج لإضافة شركات / مصادر (راجع [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## ☕ الدعم
+
+إذا وفّرت لك هذه الأداة الوقت، فكوب قهوة موضع تقدير — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+
 ## 📄 License
 
 [MIT](LICENSE)

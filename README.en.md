@@ -196,6 +196,10 @@ Provided under the [MIT License](LICENSE) "as is", without warranty of any kind.
 
 A local tool that aggregates official open positions from companies worldwide and in China. PRs welcome to add more companies / sources (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## ☕ Support
+
+If this tool saved you time, a coffee is appreciated — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+
 ## 📄 License
 
 [MIT](LICENSE)

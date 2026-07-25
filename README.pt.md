@@ -148,6 +148,10 @@ Sob [licença MIT](LICENSE) "como está", sem garantia de qualquer tipo.
 
 Uma ferramenta local que agrega vagas oficiais de empresas do mundo todo e da China. PRs bem-vindos para adicionar mais empresas / fontes (veja [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## ☕ Apoio
+
+Se esta ferramenta te economizou tempo, um café é bem-vindo — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+
 ## 📄 License
 
 [MIT](LICENSE)

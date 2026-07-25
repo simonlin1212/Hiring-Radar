@@ -148,6 +148,10 @@ Unter [MIT-Lizenz](LICENSE) „wie besehen", ohne jegliche Gewährleistung.
 
 Ein lokales Tool, das offizielle offene Stellen von Unternehmen weltweit und in China aggregiert. PRs zum Hinzufügen weiterer Unternehmen / Quellen willkommen (siehe [CONTRIBUTING.md](CONTRIBUTING.md)).
 
+## ☕ Unterstützung
+
+Wenn dieses Tool Ihnen Zeit gespart hat, würde ich mich über einen Kaffee freuen — [Buy Me a Coffee](https://buymeacoffee.com/simonlin1212).
+
 ## 📄 License
 
 [MIT](LICENSE)
