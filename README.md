@@ -1,6 +1,6 @@
 <p align="center"><b>简体中文</b> | <a href="README_en.md">English</a> | <a href="README_ko.md">한국어</a> | <a href="README_es.md">Español</a> | <a href="README_fr.md">Français</a> | <a href="README_de.md">Deutsch</a> | <a href="README_pt.md">Português</a> | <a href="README_ru.md">Русский</a> | <a href="README_ar.md">العربية</a></p>
 
-# Hiring Radar · 招聘雷达
+<h1 align="center">Hiring Radar · 招聘雷达</h1>
 
 <p align="center">
   <b>AI 驱动的全球招聘信息雷达 —— 扫描全球与中国的在招岗位，用来找工作、读产业风向。</b><br>

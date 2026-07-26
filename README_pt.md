@@ -1,6 +1,6 @@
 <p align="center"><a href="README.md">简体中文</a> | <a href="README_en.md">English</a> | <a href="README_ko.md">한국어</a> | <a href="README_es.md">Español</a> | <a href="README_fr.md">Français</a> | <a href="README_de.md">Deutsch</a> | <b>Português</b> | <a href="README_ru.md">Русский</a> | <a href="README_ar.md">العربية</a></p>
 
-# Hiring Radar
+<h1 align="center">Hiring Radar</h1>
 
 [中文](README.md) · [English](README_en.md) · [한국어](README_ko.md) · [Español](README_es.md) · [Français](README_fr.md) · [Deutsch](README_de.md) · **Português** · [Русский](README_ru.md) · [العربية](README_ar.md)
 
