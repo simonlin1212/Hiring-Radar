@@ -158,4 +158,4 @@ key | beisen | 회사 | slug             # 포털 {slug}.zhiye.com, 예: dreame
 
 전 세계와 중국 기업의 공식 채용 공고를 한곳에 모으는 로컬 도구. 회사/소스 추가 PR 환영([CONTRIBUTING.md](CONTRIBUTING.md)).
 
-**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)

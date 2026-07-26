@@ -158,4 +158,4 @@ Si cet outil vous a fait gagner du temps, un café est toujours apprécié.
 
 Un outil local qui agrège les offres officielles d'entreprises du monde entier et de Chine. PRs bienvenues pour ajouter des entreprises / sources (voir [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)

@@ -158,4 +158,4 @@ key | beisen | Компания | slug             # портал {slug}.zhiye.c
 
 Локальный инструмент, агрегирующий официальные открытые вакансии компаний по всему миру и в Китае. PR для добавления компаний / источников приветствуются (см. [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)

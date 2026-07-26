@@ -158,4 +158,4 @@ Wenn dieses Tool Ihnen Zeit gespart hat, würde ich mich über einen Kaffee freu
 
 Ein lokales Tool, das offizielle offene Stellen von Unternehmen weltweit und in China aggregiert. PRs zum Hinzufügen weiterer Unternehmen / Quellen willkommen (siehe [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)

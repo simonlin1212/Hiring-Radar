@@ -158,4 +158,4 @@ key | beisen | الشركة | slug             # البوابة {slug}.zhiye.com
 
 أداة محلية تجمع الوظائف الرسمية المفتوحة من شركات حول العالم وفي الصين. مرحبًا بطلبات الدمج لإضافة شركات / مصادر (راجع [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)

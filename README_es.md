@@ -158,4 +158,4 @@ Si esta herramienta te ahorró tiempo, un café es bienvenido.
 
 Una herramienta local que agrega vacantes oficiales de empresas de todo el mundo y de China. PRs bienvenidos para añadir más empresas / fuentes (ver [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · TikTok [@simonlin0423](https://www.tiktok.com/@simonlin0423) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
+**Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
