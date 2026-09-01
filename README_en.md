@@ -19,6 +19,14 @@
 
 ---
 
+## The Author Is Open to Opportunities
+
+The author is open to AI roles at Tencent and other leading technology companies in Shenzhen, and hopes to join a team passionate about AI development. Areas of interest include AI / Agent product development, real-world deployment, and AI consulting.
+
+Contact: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
+
+---
+
 ## What Is This
 
 **Hiring Radar is an AI-native hiring-data tool — it gives your AI (Claude Code / ChatGPT / any agent) the ability to read official open positions from companies worldwide + China.** It reads companies' own official applicant-tracking systems (ATS) via their public endpoints and aggregates the open positions into **structured data** to feed your AI. It's not yet another job site that wants you to sign up — it runs locally, and one command queries any company worldwide, a whole field, or scans across companies, with **no account and zero config**.
