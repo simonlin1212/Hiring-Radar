@@ -144,14 +144,6 @@ Ferramenta **pessoal / de pesquisa, local + open source**. Use com responsabilid
 
 Sob [licença MIT](LICENSE) "como está", sem garantia de qualquer tipo.
 
-## Apoio
-
-Se esta ferramenta te economizou tempo, um café é bem-vindo.
-
-<p align="center">
-  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
-</p>
-
 ## License
 
 [MIT](LICENSE)

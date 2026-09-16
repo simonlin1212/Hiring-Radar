@@ -144,14 +144,6 @@ Herramienta **personal / de investigación, local + de código abierto**. Úsala
 
 Bajo [licencia MIT](LICENSE) "tal cual", sin garantía de ningún tipo.
 
-## Soporte
-
-Si esta herramienta te ahorró tiempo, un café es bienvenido.
-
-<p align="center">
-  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
-</p>
-
 ## License
 
 [MIT](LICENSE)

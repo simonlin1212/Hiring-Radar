@@ -144,14 +144,6 @@ key | beisen | الشركة | slug             # البوابة {slug}.zhiye.com
 
 مُقدَّمة بموجب [رخصة MIT](LICENSE) «كما هي» دون أي ضمان.
 
-## الدعم
-
-إذا وفّرت لك هذه الأداة الوقت، فكوب قهوة موضع تقدير.
-
-<p align="center">
-  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
-</p>
-
 ## License
 
 [MIT](LICENSE)

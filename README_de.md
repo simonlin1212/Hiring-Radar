@@ -144,14 +144,6 @@ Ein **persönliches / Forschungs-, lokales + Open-Source-**Tool. Verantwortungsv
 
 Unter [MIT-Lizenz](LICENSE) „wie besehen", ohne jegliche Gewährleistung.
 
-## Unterstützung
-
-Wenn dieses Tool Ihnen Zeit gespart hat, würde ich mich über einen Kaffee freuen.
-
-<p align="center">
-  <a href="https://buymeacoffee.com/simonlin1212"><img src="./assets/bmc-qr.png" width="180" alt="Buy Me a Coffee"></a>
-</p>
-
 ## License
 
 [MIT](LICENSE)
