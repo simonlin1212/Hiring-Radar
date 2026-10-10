@@ -38,16 +38,21 @@
 
 ## المزايا
 
-| الميزة | الوصف |
-|---|---|
-| **حسب الشركة (دوليًا)** | اسم الشركة وحده يكفي لفحص ٨ أنظمة ATS تلقائيًا (Greenhouse/Ashby/Lever/SmartRecruiters/Recruitee/Breezy/BambooHR/Personio)؛ عند الإصابة: وصف كامل + قسم + موقع + تاريخ + راتب |
-| **لوحات العمل عن بُعد العالمية** | `--board` يمسح عدة شركات: RemoteOK / Remotive / WeWorkRemotely / WorkingNomads |
-| **١٧٠ شركة صينية** | `--local`: محلّلات **عامة** لـ Feishu Hire / Moka / Beisen (إضافة شركة = إضافة سطر) + ٦ بوابات خاصة. ذكاء مُجسَّد / نماذج كبيرة / أشباه موصلات / سيارات / طاقة / كَمّي / متعددة الجنسيات / ألعاب |
-| **مرشّح بالكلمات/الحداثة** | `--keyword a,b,c` (الفاصلة = أو؛ يبحث في العنوان/القسم/الموقع/الوصف/الراتب) · `--recent-days N` |
-| **مخرجات منظَّمة موحّدة** | مخطط من ١٥ حقلًا؛ `--json` يُخرج كل شيء (بما فيه الوصف الكامل) لتغذية الذكاء الاصطناعي |
-| **ملخّص في الطرفية** | افتراضيًا أعلى الشركات / الأقسام / المواقع + قائمة الوظائف |
-| **مُوجَّه بالبيانات** | قائمة الشركات الصينية جدول بذور `companies.seed` — **إضافة شركة = سطر واحد بلا كود** |
-| **مكتبة قياسية فقط** | سكربت بنقطة دخول واحدة، بلا تبعيات (Moka فقط يحتاج `pycryptodome`)، يعمل على أي `python3` |
+<table>
+<thead>
+<tr><th nowrap>الميزة</th><th>الوصف</th></tr>
+</thead>
+<tbody>
+<tr><td nowrap><strong>حسب الشركة (دوليًا)</strong></td><td>اسم الشركة وحده يكفي لفحص ٨ أنظمة ATS تلقائيًا (Greenhouse/Ashby/Lever/SmartRecruiters/Recruitee/Breezy/BambooHR/Personio)؛ عند الإصابة: وصف كامل + قسم + موقع + تاريخ + راتب</td></tr>
+<tr><td nowrap><strong>لوحات العمل عن بُعد العالمية</strong></td><td><code>--board</code> يمسح عدة شركات: RemoteOK / Remotive / WeWorkRemotely / WorkingNomads</td></tr>
+<tr><td nowrap><strong>١٧٠ شركة صينية</strong></td><td><code>--local</code>: محلّلات <strong>عامة</strong> لـ Feishu Hire / Moka / Beisen (إضافة شركة = إضافة سطر) + ٦ بوابات خاصة. ذكاء مُجسَّد / نماذج كبيرة / أشباه موصلات / سيارات / طاقة / كَمّي / متعددة الجنسيات / ألعاب</td></tr>
+<tr><td nowrap><strong>مرشّح بالكلمات/الحداثة</strong></td><td><code>--keyword a,b,c</code> (الفاصلة = أو؛ يبحث في العنوان/القسم/الموقع/الوصف/الراتب) · <code>--recent-days N</code></td></tr>
+<tr><td nowrap><strong>مخرجات منظَّمة موحّدة</strong></td><td>مخطط من ١٥ حقلًا؛ <code>--json</code> يُخرج كل شيء (بما فيه الوصف الكامل) لتغذية الذكاء الاصطناعي</td></tr>
+<tr><td nowrap><strong>ملخّص في الطرفية</strong></td><td>افتراضيًا أعلى الشركات / الأقسام / المواقع + قائمة الوظائف</td></tr>
+<tr><td nowrap><strong>مُوجَّه بالبيانات</strong></td><td>قائمة الشركات الصينية جدول بذور <code>companies.seed</code> — <strong>إضافة شركة = سطر واحد بلا كود</strong></td></tr>
+<tr><td nowrap><strong>مكتبة قياسية فقط</strong></td><td>سكربت بنقطة دخول واحدة، بلا تبعيات (Moka فقط يحتاج <code>pycryptodome</code>)، يعمل على أي <code>python3</code></td></tr>
+</tbody>
+</table>
 
 ## البدء السريع
 
