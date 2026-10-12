@@ -23,7 +23,7 @@ PATH = os.path.join(HOME, "directory", "openroles.json")
 # 命中多个系统时的展示/默认优先顺序：带完整 JD 和日期的系统在前
 PREFER = ["greenhouse", "ashby", "lever", "workable", "recruitee", "teamtailor", "personio", "smartrecruiters",
           "workday", "pinpointhq", "rippling", "breezy", "jazzhr", "manatal", "hireology", "zohorecruit",
-          "ultipro", "jobvite", "icims", "applicantpro", "isolvedhire", "careerplug", "paycom", "pageup", "bamboohr"]
+          "ultipro", "jobvite", "icims", "applicantpro", "isolvedhire", "careerplug", "pageup", "bamboohr"]
 _TAIL = {"inc", "llc", "ltd", "co", "corp", "careers", "career", "jobs", "job", "hr", "hq", "group", "the",
          "company", "pty", "plc", "gmbh", "usa", "us", "uk", "au", "global", "hiring", "recruiting", "talent"}
 
@@ -93,7 +93,8 @@ def _load():
             for kind, rows in doc.get("tenants", {}).items():
                 for row in rows:
                     slug, meta = row[0], (row[1] if len(row) > 1 else {})
-                    keys = {norm(slug), norm(meta.get("name", ""))}
+                    # iCIMS 等常见 careers-acme 这种前缀写法，去掉前缀也存一份
+                    keys = {norm(slug), norm(meta.get("name", "")), norm(re.sub(r"^(careers|jobs)-", "", slug))}
                     n = norm(slug)
                     for t in _GLUED:
                         if n.endswith(t) and len(n) - len(t) >= 4:

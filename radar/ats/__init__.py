@@ -5,7 +5,9 @@ slug 一律先过 check_slug（单段字母数字，防把请求改写到别的�
 """
 import re
 
-from . import (ashby, bamboohr, breezy, greenhouse, lever, personio, recruitee, smartrecruiters, workable, workday)
+from . import (applicantpro, ashby, bamboohr, breezy, careerplug, greenhouse, hireology, icims, isolvedhire, jazzhr,
+               jobvite, lever, manatal, pageup, personio, pinpointhq, recruitee, rippling, smartrecruiters, teamtailor,
+               ultipro, workable, workday, zohorecruit)
 
 # name → (模块, 说明)。顺序即 --list 的展示顺序。
 REGISTRY = {
@@ -19,7 +21,22 @@ REGISTRY = {
     "bamboohr": (bamboohr, "BambooHR"),
     "personio": (personio, "Personio"),
     "workable": (workable, "Workable"),
+    "teamtailor": (teamtailor, "Teamtailor"),
+    "pinpointhq": (pinpointhq, "Pinpoint"),
+    "rippling": (rippling, "Rippling"),
+    "jazzhr": (jazzhr, "JazzHR"),
+    "manatal": (manatal, "Manatal"),
+    "hireology": (hireology, "Hireology"),
+    "zohorecruit": (zohorecruit, "Zoho Recruit"),
+    "ultipro": (ultipro, "UKG / UltiPro（需 board_id，名录里有）"),
+    "jobvite": (jobvite, "Jobvite"),
+    "icims": (icims, "iCIMS"),
+    "applicantpro": (applicantpro, "ApplicantPro"),
+    "isolvedhire": (isolvedhire, "isolved Hire"),
+    "careerplug": (careerplug, "CareerPlug"),
+    "pageup": (pageup, "PageUp（需 host/instance/clientkey，名录里有）"),
 }
+# 不支持：Paycom——robots.txt 只放行单个职位页，不放行职位列表接口，按规矩不读。
 
 # 按公司名猜 slug 时依次试的 ATS（v1 的 8 个，顺序不变）。名录查得到时不走这条。
 PROBE_ORDER = ["greenhouse", "ashby", "lever", "smartrecruiters", "recruitee", "breezy", "bamboohr", "personio"]

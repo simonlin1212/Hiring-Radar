@@ -45,9 +45,14 @@ def single_page(fn):
 
 
 # 各来源模块会 from . import single_page，所以放在辅助函数定义之后再导入
-from . import (freehire, remoteok, remotive, weworkremotely, workable, workingnomads)  # noqa: E402
+from . import (adzuna, arbeitsagentur, freehire, jobtech, mycareersfuture, reed, remoteok, remotive,  # noqa: E402
+               usajobs, weworkremotely, workable, workingnomads)
 
-BOARDS = {m.NAME: m for m in (remoteok, remotive, weworkremotely, workingnomads, freehire, workable)}
-ALIASES = {"wwr": "weworkremotely", "nomads": "workingnomads", "workable-search": "workable"}
+BOARDS = {m.NAME: m for m in (remoteok, remotive, weworkremotely, workingnomads, freehire, workable,
+                              jobtech, mycareersfuture, arbeitsagentur, reed, adzuna, usajobs)}
+ALIASES = {"wwr": "weworkremotely", "nomads": "workingnomads", "workable-search": "workable",
+           "ba": "arbeitsagentur", "mcf": "mycareersfuture", "platsbanken": "jobtech"}
+# 需要用户自己申请密钥的来源（密钥放环境变量）；维护者没有 key，未经实网测试
+NEEDS_KEY = {"reed": "REED_API_KEY", "adzuna": "ADZUNA_APP_ID + ADZUNA_APP_KEY", "usajobs": "USAJOBS_API_KEY + USAJOBS_EMAIL"}
 # --board all 的含义保持 v1：4 个远程板（跨公司大来源要显式点名，避免一次拉几十万条）
 REMOTE = ["remoteok", "remotive", "weworkremotely", "workingnomads"]

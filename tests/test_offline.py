@@ -110,6 +110,66 @@ class Mappings(unittest.TestCase):
         self.assertIn("Hi", r["jd"])
         self.assertIn("Fun", r["jd"])
 
+    def test_jsonld(self):
+        html = """<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization"},
+        {"@type":"JobPosting","title":"Receptionist","datePosted":"2026-10-01","description":"<p>Answer calls</p>",
+         "hiringOrganization":{"name":"Acme Dental"},"employmentType":["FULL_TIME","PART_TIME"],"identifier":{"value":"R1"},
+         "jobLocation":{"address":{"addressLocality":"Perth","addressRegion":"WA","addressCountry":"AUS"}},
+         "baseSalary":{"currency":"AUD","value":{"minValue":30,"maxValue":35,"unitText":"HOUR"}}}]}</script>"""
+        jp = ats._jsonld.postings(html)
+        self.assertEqual(len(jp), 1)
+        r = ats._jsonld.to_rec(jp[0], "https://x/1")
+        self.assertEqual((r["title"], r["company"], r["id"], r["date"]), ("Receptionist", "Acme Dental", "R1", "2026-10-01"))
+        self.assertEqual((r["location"], r["country"]), ("Perth, WA, AU", "AU"))
+        self.assertEqual((r["comp"], r["type"], r["jd"]), ("AUD 30-35/hour", "FULL_TIME, PART_TIME", "Answer calls"))
+        self.assertEqual(ats._jsonld.postings("<script type='application/ld+json'>{bad json</script>"), [])
+
+    def test_gov_boards(self):
+        from radar.boards import arbeitsagentur, jobtech, mycareersfuture, reed
+        r = jobtech.to_rec({"id": "1", "headline": "Receptionist", "employer": {"name": "IES"},
+                            "workplace_address": {"municipality": "Trelleborg", "region": "Skåne län", "country": "Sverige"},
+                            "description": {"text": "Svara i telefon"}, "publication_date": "2026-10-09T15:39:28",
+                            "occupation": {"label": "Kontorsreceptionist"}, "webpage_url": "https://af/1"})
+        self.assertEqual((r["country"], r["location"], r["jd"], r["source"]), ("SE", "Trelleborg, Skåne län", "Svara i telefon", "gov/jobtech"))
+        r = mycareersfuture.to_rec({"title": "Admin", "postedCompany": {"name": "Acme Pte"}, "uuid": "u1",
+                                    "salary": {"minimum": 2700, "maximum": 3100, "type": {"salaryType": "Monthly"}},
+                                    "metadata": {"jobPostId": "MCF-1", "newPostingDate": "2026-10-12", "isPostedOnBehalf": True}})
+        self.assertEqual((r["comp"], r["id"], r["country"], r["agency"]), ("SGD 2700-3100/monthly", "MCF-1", "SG", "posted on behalf"))
+        r = arbeitsagentur.to_rec({"stellenangebotsTitel": "Buchhalter/in", "firma": "X GmbH", "referenznummer": "R-1",
+                                   "stellenlokationen": [{"adresse": {"ort": "Salzburg", "land": "OESTERREICH"}}],
+                                   "arbeitszeitVollzeit": True, "vertragsdauer": "KEINE_ANGABE",
+                                   "datumErsteVeroeffentlichung": "2026-10-11"})
+        self.assertEqual((r["country"], r["type"], r["date"]), ("AT", "Vollzeit", "2026-10-11"))
+        self.assertEqual(reed._date("09/10/2026"), "2026-10-09")
+
+    def test_board_country_skip(self):
+        """单一国家的来源：查别的国家时一条请求都不发。"""
+        from radar.boards import arbeitsagentur, jobtech, mycareersfuture, reed, usajobs
+        q = boards.Query(countries=["AU"])
+        for m in (jobtech, mycareersfuture, arbeitsagentur, reed, usajobs):
+            self.assertEqual(list(m.pages(q)), [])
+
+    def test_careerplug_card(self):
+        html = ('<a aria-label="x" href="/jobs/42"><div class="row"><div class="job-title col-sm-7">'
+                '<span class="name">Office Admin</span></div><div class="job-location col-md-3">\n<div>\n'
+                "<span class='job-row-title hidden-md'>Location:</span>\nVT-South Burlington-05403\n</div>\n</div>"
+                '<div class="job-post-date col-md-2">\n<div>\n<span class=\'job-row-title\'>Post Date:</span>\n10-10-26\n'
+                "</div>\n</div></div></a>")
+        m = ats.careerplug._CARD.search(html)
+        f = [ats.careerplug._field(m.group(2), c) for c in ("job-title", "job-location", "job-post-date")]
+        self.assertEqual(f, ["Office Admin", "VT-South Burlington-05403", "10-10-26"])
+        self.assertEqual((ats.careerplug._loc(f[1]), ats.careerplug._date(f[2])), ("South Burlington, VT", "2026-10-10"))
+
+    def test_pageup_detail(self):
+        html = ('<div id="job-content"><h2>Store Manager</h2><div class=\'jobdets\'><p><b>Job no:</b> 1<br>'
+                '<b>Work type:</b> <span class="work-type permanent">Permanent / Full time</span></p>'
+                '<b>Advertised:</b> <span class="open-date">\n<time datetime="2026-10-12T01:00:00Z">12 Oct 2026</time></span>'
+                '<p>Lead the team.</p><!-- hidden --></div><a class="back-link button" href="/">Back</a>')
+        jd, wt, adv = ats.pageup._detail(html)
+        self.assertEqual((wt, adv), ("Permanent / Full time", "2026-10-12T01:00:00Z"))
+        self.assertIn("Lead the team.", jd)
+        self.assertNotIn("hidden", jd)
+
 
 class Security(unittest.TestCase):
     def test_slug(self):
@@ -126,6 +186,30 @@ class Security(unittest.TestCase):
                 ats.workday.check(host, "t", "s")
         with self.assertRaises(ValueError):
             ats.workday.check("x.wd5.myworkdayjobs.com", "t", "../s")
+
+    def test_keys_not_leaked(self):
+        self.assertEqual(http.safe("https://a/x?app_id=ID1&what=a&app_key=SEC&page=2"),
+                         "https://a/x?app_id=***&what=a&app_key=***&page=2")
+        from radar.boards import adzuna
+        old = {k: os.environ.pop(k, None) for k in ("ADZUNA_APP_ID", "ADZUNA_APP_KEY")}
+        try:
+            with self.assertRaises(ValueError) as cm:
+                list(adzuna.pages(boards.Query(countries=["AU"])))
+            self.assertIn("ADZUNA_APP_KEY", str(cm.exception))
+        finally:
+            os.environ.update({k: v for k, v in old.items() if v})
+
+    def test_meta_hosts(self):
+        """名录给的 host/board_id 也要过检查，防止被改写到别的域名（这些检查在发请求之前）。"""
+        for meta in ({"host": "evil.com", "instance": "1", "clientkey": "a"},
+                     {"host": "careers.pageuppeople.com.evil.com", "instance": "1", "clientkey": "a"},
+                     {"host": "careers.pageuppeople.com", "instance": "1/../x", "clientkey": "a"},
+                     {"host": "careers.pageuppeople.com", "instance": "1", "clientkey": "a/b"}):
+            with self.assertRaises(ValueError):
+                ats.fetch("pageup", "x", meta)
+        for meta in ({}, {"board_id": "../../x"}, {"board_id": "de1785c1-76c7-4265-b621-ebc07480ed5d/x"}):
+            with self.assertRaises(ValueError):
+                ats.fetch("ultipro", "x", meta)
 
 
 class Directory(unittest.TestCase):
@@ -317,6 +401,43 @@ class Http(unittest.TestCase):
         self.assertEqual(self.hits["/forbidden"], 1)   # 403 不重试
         with self.assertRaises(http.Blocked):
             http.get_text(self.base + "/challenge")
+
+
+class Mcp(unittest.TestCase):
+    def talk(self, *msgs):
+        from radar import mcp
+        out = io.StringIO()
+        lines = [m if isinstance(m, str) else json.dumps(m) for m in msgs]
+        with redirect_stderr(io.StringIO()):
+            mcp.serve(io.StringIO("\n".join(lines) + "\n"), out)
+        return [json.loads(l) for l in out.getvalue().splitlines()]
+
+    def test_protocol(self):
+        r = self.talk({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-03-26"}},
+                      {"jsonrpc": "2.0", "method": "notifications/initialized"},
+                      {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
+                      {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "list_sources", "arguments": {}}},
+                      {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "nope"}},
+                      {"jsonrpc": "2.0", "id": 5, "method": "tools/call",
+                       "params": {"name": "company_jobs", "arguments": {"company": "x", "ats": "greenhouse", "slug": "a/b"}}},
+                      "not json",
+                      {"jsonrpc": "2.0", "id": 6, "method": "ping"})
+        self.assertEqual([m.get("id") for m in r], [1, 2, 3, 4, 5, None, 6])   # 通知不回
+        self.assertEqual(r[0]["result"]["protocolVersion"], "2025-03-26")
+        self.assertEqual({t["name"] for t in r[1]["result"]["tools"]},
+                         {"company_jobs", "search_jobs", "find_company", "list_sources", "job_history"})
+        src = json.loads(r[2]["result"]["content"][0]["text"])
+        self.assertIn("pageup", src["ats"])
+        self.assertEqual(src["boards"]["reed"]["needs_key"], "REED_API_KEY")
+        self.assertEqual(r[3]["error"]["code"], -32602)
+        self.assertTrue(r[4]["result"]["isError"])          # 非法 slug 被拦下，不发请求
+        self.assertEqual(r[5]["error"]["code"], -32700)
+
+    def test_slim(self):
+        from radar import mcp
+        s = mcp._slim(rec(title="A", jd="<p>" + "x" * 2000 + "</p>", _wd="tmp"))
+        self.assertEqual(set(s), {"title", "jd"})
+        self.assertEqual(len(s["jd"]), mcp.JD_CHARS + 1)
 
 
 if __name__ == "__main__":

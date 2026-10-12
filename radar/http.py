@@ -9,6 +9,7 @@
 """
 import json
 import os
+import re
 import socket
 import ssl
 import sys
@@ -56,6 +57,14 @@ def _space(url):
         time.sleep(wait)
 
 
+_SECRET = re.compile(r"([?&](?:app_id|app_key|api_key|apikey|key|token|access_token)=)[^&#]*", re.I)
+
+
+def safe(url):
+    """报错/日志里的网址把密钥参数打码（如 Adzuna 的 app_key），避免密钥进日志和续跑进度文件。"""
+    return _SECRET.sub(r"\1***", str(url))
+
+
 def _log(msg):
     if DEBUG:
         sys.stderr.write(f"[debug] {msg}\n")
@@ -96,26 +105,26 @@ def request(url, data=None, headers=None, method=None, tries=4, timeout=None):
             if e.code in (429, 502, 503, 504):
                 if attempt + 1 >= tries:
                     if e.code == 429:
-                        raise RateLimited(f"{url} 被限流(429)，重试 {tries} 次仍未恢复")
+                        raise RateLimited(f"{safe(url)} 被限流(429)，重试 {tries} 次仍未恢复")
                     raise
                 wait = _retry_after(e, attempt)
                 sys.stderr.write(f"[i] {urllib.parse.urlsplit(url).hostname} 返回 {e.code}，{wait} 秒后重试\n")
                 time.sleep(wait)
                 continue
             if e.code == 403 or _looks_blocked(body):
-                raise Blocked(f"{url} 拒绝访问({e.code})，按约定不绕过")
+                raise Blocked(f"{safe(url)} 拒绝访问({e.code})，按约定不绕过")
             raise
         except urllib.error.URLError as e:
             if isinstance(e.reason, socket.gaierror) or attempt + 1 >= tries:
                 raise  # 域名不存在 / 重试用完
-            _log(f"{url} 网络错误 {e.reason}，重试")
+            _log(f"{safe(url)} 网络错误 {e.reason}，重试")
             time.sleep(2 * (attempt + 1))
         except (socket.timeout, ConnectionError) as e:
             if attempt + 1 >= tries:
                 raise
-            _log(f"{url} {type(e).__name__}，重试")
+            _log(f"{safe(url)} {type(e).__name__}，重试")
             time.sleep(2 * (attempt + 1))
-    raise RuntimeError(f"请求失败: {url}")
+    raise RuntimeError(f"请求失败: {safe(url)}")
 
 
 def _url(url, params):
@@ -128,7 +137,7 @@ def _url(url, params):
 def get_text(url, params=None, headers=None, **kw):
     _, _, text = request(_url(url, params), headers=headers, **kw)
     if _looks_blocked(text):
-        raise Blocked(f"{url} 返回人机验证页，按约定不绕过")
+        raise Blocked(f"{safe(url)} 返回人机验证页，按约定不绕过")
     return text
 
 
@@ -137,8 +146,8 @@ def _json(url, text):
         return json.loads(text)
     except ValueError:
         if _looks_blocked(text):
-            raise Blocked(f"{url} 返回人机验证页，按约定不绕过")
-        raise ValueError(f"{url} 返回的不是 JSON：{text[:120]!r}")
+            raise Blocked(f"{safe(url)} 返回人机验证页，按约定不绕过")
+        raise ValueError(f"{safe(url)} 返回的不是 JSON：{text[:120]!r}")
 
 
 def get_json(url, params=None, headers=None, **kw):

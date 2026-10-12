@@ -18,6 +18,11 @@ _ALIAS = {"usa": "US", "united states of america": "US", "uk": "GB", "england": 
           "uae": "AE", "türkiye": "TR", "viet nam": "VN", "aotearoa": "NZ"}
 _BY_NAME = {v.lower(): k for k, v in NAMES.items()}
 _BY_NAME.update(_ALIAS)
+# 三位码（部分招聘系统用 ISO3，如 USA、AUS）
+ISO3 = {"USA": "US", "GBR": "GB", "CAN": "CA", "AUS": "AU", "NZL": "NZ", "IRL": "IE", "DEU": "DE", "FRA": "FR",
+        "NLD": "NL", "BEL": "BE", "CHE": "CH", "AUT": "AT", "ESP": "ES", "PRT": "PT", "ITA": "IT", "SWE": "SE",
+        "NOR": "NO", "DNK": "DK", "FIN": "FI", "POL": "PL", "IND": "IN", "SGP": "SG", "MYS": "MY", "PHL": "PH",
+        "MEX": "MX", "BRA": "BR", "ZAF": "ZA", "ARE": "AE", "ISR": "IL", "JPN": "JP", "CHN": "CN", "HKG": "HK"}
 
 
 def code(name):
@@ -25,6 +30,8 @@ def code(name):
     s = (name or "").strip()
     if len(s) == 2 and s.upper() in NAMES:
         return s.upper()
+    if len(s) == 3 and s.upper() in ISO3:
+        return ISO3[s.upper()]
     return _BY_NAME.get(s.lower(), "")
 
 
