@@ -557,6 +557,27 @@ class Sweep(unittest.TestCase):
         self.assertEqual(rep["fake_a"]["n"], 4)
         self.assertIn("对不上", err.getvalue())
 
+    def test_resume_keeps_unicode_line_separators(self):
+        """JD 里有 U+2028 / U+2029 / U+0085（ensure_ascii=False 原样写出）：续跑仍认得已存结果，不当损坏清空。"""
+        q = boards.Query(keywords=["x-u2028"])
+        self.a.FILTERS = {"keyword"}
+        stp, spool = sweep._paths(["fake_a"], q)
+        os.makedirs(sweep.DIR, exist_ok=True)
+        lines = [json.dumps(rec(title=f"old\u2028{i}\u2029x\x85y", id=f"0-{i}", source="fake_a"), ensure_ascii=False) + "\n"
+                 for i in range(2)]
+        data = "".join(lines)
+        with open(spool, "w", encoding="utf-8") as f:
+            f.write(data)
+        with open(stp, "w") as f:
+            json.dump({"cursor": {"fake_a": {"p": 1}}, "done": {}, "report": {"fake_a": {"n": 2, "capped": False}},
+                       "lines": 2, "bytes": len(data.encode())}, f)
+        err = io.StringIO()
+        with redirect_stderr(err):
+            items, rep = sweep.run(["fake_a"], q, resume=True)
+        self.assertNotIn("对不上", err.getvalue())
+        self.assertEqual([it["id"] for it in items], ["0-0", "0-1", "1-0", "1-1"])
+        self.assertEqual(items[0]["title"], "old\u20280\u2029x\x85y")
+
     def test_same_job_counted_once(self):
         """同一来源里同一个职位（多个关键词都命中、续跑重拉的页）只算一次，也不占 --max 名额。"""
         class Twice:

@@ -150,7 +150,7 @@ Greenhouse · Ashby · Lever · Workday · SmartRecruiters · Recruitee · Breez
 
 | Source | Coverage | Notes |
 |---|---|---|
-| `freehire` | Global (claims ~3.3M open jobs) | [freehire](https://github.com/strelov1/freehire) public API, aggregating 225 sources, full job descriptions, filter by country / keyword / last N days |
+| `freehire` | Global (claims ~3.3M open jobs; ~2.03M searchable via the public API on 2026-10-12) | [freehire](https://github.com/strelov1/freehire) public API, aggregating 225 sources, full job descriptions, filter by country / keyword / last N days |
 | `workable` | Global | Workable-wide job search, filter by country / keyword |
 | `jobtech` | Sweden | Swedish Public Employment Service open data, full job descriptions |
 | `mycareersfuture` | Singapore | Singapore government job portal, salaries, no job descriptions |
@@ -255,7 +255,7 @@ A **personal / research, local + open-source** tool. Use it responsibly:
 
 - **Read job postings only — never resumes / any personal data** (personal data triggers China's PIPL — don't).
 - **Read only public, login-free endpoints**: if a site has a login wall / captcha / active anti-bot, **don't bypass it**; a 403 or bot-check page stops the run; no proxy pools, no browser-fingerprint spoofing.
-- **Honest identity, low frequency**: the User-Agent names HiringRadar and the project URL (the one exception: the Feishu Hire and ByteDance APIs reject a program identity, so those two parsers keep v1's browser User-Agent); by default 0.3 seconds between two requests to the same site; on 429 it backs off as asked, and if that still fails it stops and waits for you to resume. robots.txt is checked before a new source is added (which is why Paycom is not supported).
+- **Honest identity, low frequency**: the User-Agent names HiringRadar and the project URL (exceptions: the Feishu Hire and ByteDance APIs reject a program identity, so those two parsers keep v1's browser User-Agent; the official USAJobs API requires the User-Agent to be the email you registered your key with, so that board sends it as required); by default 0.3 seconds between two requests to the same site; on 429 it backs off as asked, and if that still fails it stops and waits for you to resume. robots.txt is checked before a new source is added (which is why Paycom is not supported).
 - **Keys only in environment variables**: sources that need a key read it from the environment, and keys are masked in error messages.
 - **Local only**: no hosting / upload / server side; data lands only on your machine. If you re-publish the data, evaluate compliance yourself; no commercial resale. The company directory is CC BY-SA 4.0 — redistribution requires attribution and the same license (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
 - "Publicly viewable" ≠ "free to aggregate and re-publish" — mass scraping + re-publishing can constitute unfair competition in many jurisdictions (incl. Chinese Anti-Unfair-Competition case law).

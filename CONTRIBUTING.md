@@ -28,7 +28,7 @@ key | beisen | 公司名 | slug
 - **注册**：
   - 通用型（一个脚本覆盖多家，如 feishu/moka）→ 走 `companies.seed`。
   - 单站型（一家一个，如腾讯/网易）→ 在 `radar/local.py` 的 `LOCAL_PARSERS` 加一行 `"key": {"command":"python3","args":["parsers/xxx.py","{keyword}"]}`。
-- **联网**：用 `radar.http` 的 `get_json` / `get_text` / `post_json` / `post_form`（参考现有脚本开头的 import），不要自己用 `urllib`，也不要设浏览器 User-Agent（飞书招聘、字节跳动是仅有的例外，接口不接受程序身份）。目标网站拒绝访问时，抛 `Blocked` 停下。
+- **联网**：用 `radar.http` 的 `get_json` / `get_text` / `post_json` / `post_form`（参考现有脚本开头的 import），不要自己用 `urllib`，也不要设浏览器 User-Agent（飞书招聘、字节跳动是仅有的例外，接口不接受程序身份；USAJobs 按官方要求用申请密钥的邮箱作 User-Agent）。目标网站拒绝访问时，抛 `Blocked` 停下。
 - **参考实现**：`parsers/tencent.py`（最简单的单站 JSON）、`parsers/feishu.py`（通用型 + 自动探测）、`parsers/moka.py`（带解密的通用型）。
 
 ## 3. 接一个新的招聘系统（ATS，按公司查）

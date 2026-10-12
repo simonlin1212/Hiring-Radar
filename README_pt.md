@@ -137,7 +137,7 @@ Greenhouse · Ashby · Lever · Workday · SmartRecruiters · Recruitee · Breez
 
 | Fonte | Cobertura | Observações |
 |---|---|---|
-| `freehire` | Mundial (diz ter ~3,3 milhões de vagas abertas) | API pública do [freehire](https://github.com/strelov1/freehire), agrega 225 fontes, descrições completas, filtros por país / palavra-chave / últimos N dias |
+| `freehire` | Mundial (diz ter ~3,3 milhões de vagas abertas; ~2,03 milhões pesquisáveis pela API pública em 2026-10-12) | API pública do [freehire](https://github.com/strelov1/freehire), agrega 225 fontes, descrições completas, filtros por país / palavra-chave / últimos N dias |
 | `workable` | Mundial | Busca geral do Workable, filtros por país / palavra-chave |
 | `jobtech` | Suécia | Dados abertos do serviço público de emprego sueco, descrições completas |
 | `mycareersfuture` | Singapura | Portal de empregos do governo de Singapura, com salário, sem descrição |
@@ -242,7 +242,7 @@ Uma ferramenta **pessoal / de pesquisa, local e de código aberto**. Use com res
 
 - **Só vagas de emprego – nunca currículos / dados pessoais** (dados pessoais acionam a PIPL chinesa – não faça).
 - **Só interfaces públicas sem login**: barreira de login / captcha / anti-robô ativo **não são contornados**; um 403 ou página de verificação encerra a execução; sem pools de proxy, sem impressão digital de navegador falsificada.
-- **Identidade honesta, baixa frequência**: o User-Agent informa HiringRadar e a URL do projeto (única exceção: as APIs do Feishu Hire e da ByteDance recusam identidade de programa, então esses dois parsers mantêm o User-Agent de navegador da v1); por padrão 0,3 segundo entre duas requisições ao mesmo site; no 429 espera o que for pedido e, se continuar falhando, para e aguarda seu `--resume`. O robots.txt é verificado antes de adicionar uma fonte (por isso não há Paycom).
+- **Identidade honesta, baixa frequência**: o User-Agent informa HiringRadar e a URL do projeto (exceções: as APIs do Feishu Hire e da ByteDance recusam identidade de programa, então esses dois parsers mantêm o User-Agent de navegador da v1; a API oficial do USAJobs exige como User-Agent o e-mail com que você registrou a chave, e é isso que é enviado); por padrão 0,3 segundo entre duas requisições ao mesmo site; no 429 espera o que for pedido e, se continuar falhando, para e aguarda seu `--resume`. O robots.txt é verificado antes de adicionar uma fonte (por isso não há Paycom).
 - **Chaves só em variáveis de ambiente**: fontes com chave a leem do ambiente, e as chaves são mascaradas nas mensagens de erro.
 - **Só local**: sem hospedagem / upload / servidor; os dados ficam na sua máquina. Se republicar os dados, avalie você mesmo a conformidade; sem revenda comercial. O diretório de empresas é CC BY-SA 4.0 – redistribuir exige atribuição e a mesma licença (veja [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
 - "Visível publicamente" ≠ "livre para agregar e republicar" – raspagem em massa com republicação pode configurar concorrência desleal em muitas jurisdições (incluindo a jurisprudência chinesa).

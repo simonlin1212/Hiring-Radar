@@ -79,7 +79,8 @@ def _load_spool(spool, st):
             return [], False
         raw = raw[:st["bytes"]]
     items = []
-    for line in raw.decode("utf-8", "replace").splitlines():
+    for line in raw.split(b"\n"):   # 只按 LF 拆：JD 里的 U+2028 等字符 splitlines() 也会当换行
+        line = line.decode("utf-8", "replace")
         if not line.strip():
             continue
         try:

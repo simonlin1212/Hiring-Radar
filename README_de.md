@@ -137,7 +137,7 @@ Greenhouse · Ashby · Lever · Workday · SmartRecruiters · Recruitee · Breez
 
 | Quelle | Abdeckung | Hinweise |
 |---|---|---|
-| `freehire` | Weltweit (nach eigenen Angaben ca. 3,3 Mio. offene Stellen) | Öffentliche API von [freehire](https://github.com/strelov1/freehire), bündelt 225 Quellen, volle Beschreibungen, Filter nach Land / Stichwort / letzten N Tagen |
+| `freehire` | Weltweit (nach eigenen Angaben ca. 3,3 Mio. offene Stellen; über die öffentliche API am 2026-10-12 ca. 2,03 Mio. durchsuchbar) | Öffentliche API von [freehire](https://github.com/strelov1/freehire), bündelt 225 Quellen, volle Beschreibungen, Filter nach Land / Stichwort / letzten N Tagen |
 | `workable` | Weltweit | Workable-weite Stellensuche, Filter nach Land / Stichwort |
 | `jobtech` | Schweden | Offene Daten der schwedischen Arbeitsverwaltung, volle Beschreibungen |
 | `mycareersfuture` | Singapur | Staatliches Jobportal Singapurs, mit Gehalt, ohne Beschreibung |
@@ -242,7 +242,7 @@ Ein **persönliches / Forschungs-, lokales + Open-Source**-Werkzeug. Bitte veran
 
 - **Nur Stellenanzeigen lesen – nie Lebensläufe / personenbezogene Daten** (personenbezogene Daten fallen unter Chinas PIPL – nicht tun).
 - **Nur öffentliche Schnittstellen ohne Login**: Login-Sperre / Captcha / aktiver Bot-Schutz wird **nicht umgangen**; 403 oder eine Bot-Prüfseite beendet den Lauf; keine Proxy-Pools, keine gefälschten Browser-Fingerabdrücke.
-- **Ehrliche Kennung, niedrige Frequenz**: Der User-Agent nennt HiringRadar und die Projekt-URL (einzige Ausnahme: Die APIs von Feishu Hire und ByteDance lehnen eine Programmkennung ab, daher behalten diese beiden Parser den Browser-User-Agent aus v1); standardmäßig 0,3 Sekunden zwischen zwei Anfragen an dieselbe Website; bei 429 wird wie verlangt gewartet, und wenn es weiter scheitert, stoppt der Lauf und wartet auf Ihr `--resume`. robots.txt wird vor dem Aufnehmen einer neuen Quelle geprüft (deshalb kein Paycom).
+- **Ehrliche Kennung, niedrige Frequenz**: Der User-Agent nennt HiringRadar und die Projekt-URL (Ausnahmen: Die APIs von Feishu Hire und ByteDance lehnen eine Programmkennung ab, daher behalten diese beiden Parser den Browser-User-Agent aus v1; die offizielle USAJobs-API verlangt als User-Agent die E-Mail-Adresse, mit der Sie Ihren Schlüssel beantragt haben, und bekommt sie so); standardmäßig 0,3 Sekunden zwischen zwei Anfragen an dieselbe Website; bei 429 wird wie verlangt gewartet, und wenn es weiter scheitert, stoppt der Lauf und wartet auf Ihr `--resume`. robots.txt wird vor dem Aufnehmen einer neuen Quelle geprüft (deshalb kein Paycom).
 - **Schlüssel nur in Umgebungsvariablen**: Quellen mit Schlüssel lesen ihn aus der Umgebung; in Fehlermeldungen werden Schlüssel maskiert.
 - **Nur lokal**: kein Hosting / Upload / Server; Daten landen nur auf Ihrem Rechner. Bei Weiterveröffentlichung Compliance selbst prüfen; kein kommerzieller Weiterverkauf. Das Firmenverzeichnis steht unter CC BY-SA 4.0 – Weitergabe nur mit Namensnennung und gleicher Lizenz (siehe [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
 - „Öffentlich sichtbar“ ≠ „frei aggregier- und weiterveröffentlichbar“ – massenhaftes Scrapen + Weiterveröffentlichen kann in vielen Rechtsordnungen unlauterer Wettbewerb sein (inkl. chinesischer Rechtsprechung).
