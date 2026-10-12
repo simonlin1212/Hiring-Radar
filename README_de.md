@@ -2,18 +2,17 @@
 
 <h1 align="center">Hiring Radar</h1>
 
-[中文](README.md) · [English](README_en.md) · [한국어](README_ko.md) · [Español](README_es.md) · [Français](README_fr.md) · **Deutsch** · [Português](README_pt.md) · [Русский](README_ru.md) · [العربية](README_ar.md)
-
 <p align="center">
-  <b>Ein KI-Radar für den globalen Arbeitsmarkt — scannt offene Stellen weltweit und in China, für die Jobsuche und Branchensignale.</b>
+  <b>Ein KI-gestütztes Radar für den globalen Stellenmarkt – erfasst offene Stellen weltweit und in China, für Jobsuche, Branchensignale und Marktforschung.</b>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.1.0-blue.svg" alt="version 1.1.0">
+  <img src="https://img.shields.io/badge/version-2.0.0-blue.svg" alt="version 2.0.0">
   <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python 3.8+">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT">
-  <img src="https://img.shields.io/badge/global-9_ATS_+_4_boards-orange.svg" alt="Global">
+  <img src="https://img.shields.io/badge/global-24_ATS_+_12_Quellen-orange.svg" alt="Global">
   <img src="https://img.shields.io/badge/China-170_Portale-red.svg" alt="China">
+  <img src="https://img.shields.io/badge/MCP-unterst%C3%BCtzt-purple.svg" alt="MCP">
   <img src="https://img.shields.io/badge/deps-nur_stdlib-lightgrey.svg" alt="stdlib">
 </p>
 
@@ -21,133 +20,218 @@
 
 ## Was ist das
 
-**Hiring Radar ist ein KI-natives Recruiting-Datentool — es gibt deiner KI (Claude Code / ChatGPT / jedem Agenten) die Fähigkeit, offizielle offene Stellen von Unternehmen weltweit + China zu lesen.** Es liest direkt die öffentlichen Endpunkte der Bewerbermanagementsysteme (ATS), die Unternehmen verwenden, und aggregiert die offenen Stellen zu **strukturierten Daten** für deine KI. Es ist keine weitere Jobbörse mit Registrierungszwang: Es läuft lokal, und ein einziger Befehl fragt jedes Unternehmen weltweit, ein ganzes Feld oder mehrere Unternehmen ab — **ohne Konto, ohne Konfiguration**.
+**Hiring Radar ist ein KI-natives Werkzeug für Stellendaten – es lässt Ihre KI (Claude Code / Codex / ChatGPT / jeden Agenten) offizielle offene Stellen von Unternehmen weltweit und in China lesen.** Es liest die Bewerbermanagementsysteme (ATS) der Unternehmen und öffentliche Stellenquellen über deren öffentliche Schnittstellen und macht daraus **strukturierte Daten mit einheitlichen Feldern**. Es läuft lokal; ein Befehl fragt ein Unternehmen, ein Land oder eine Funktion ab – **ohne Konto, ohne Konfiguration**.
 
-Die von Unternehmen genutzten ATS (Greenhouse / Ashby / Lever / Feishu Hire / Moka / Beisen…) stellen **dieselben öffentlichen JSON-Endpunkte bereit, die ihre eigenen Frontends aufrufen** — mit vollständiger Stellenbeschreibung, Abteilung, Standort, Veröffentlichungsdatum und Gehalt. Hiring Radar liest genau diese öffentlichen Endpunkte: schnell, sauber und bereit für die KI-Analyse.
+Drei Einsatzarten:
 
-Zwei Anwendungen:
+- 🔎 **Jobsuche / „Wo wird eingestellt?“**: Welche Unternehmen in einem Bereich gerade einstellen, in welchen Städten, zu welchem Gehalt.
+- 📊 **Marktforschung / Produktchancen**: ganze Ausschnitte nach Land, Funktion und Zeitraum abrufen, um zu sehen, wofür der Markt Leute bezahlt (neu in v2).
+- 📈 **Branchen-/Investment-Frühindikator**: Stellenausschreibungen verraten Strategie oft Monate vor den Geschäftszahlen. Siehe „Branchensignal“ unten.
 
-- 🔎 **Jobsuche / „wo wird eingestellt" (primär)**: welche Unternehmen jetzt in einem Bereich einstellen, in welchen Städten, zu welchem Gehalt.
-- 📈 **Branchen-/Investment-Frühsignal (sekundär)**: Einstellungen verraten die Strategie oft Monate vor den Geschäftszahlen. Siehe [Branchensignal](#-branchensignal-sekundär).
+**Große globale Namen funktionieren mit nur einem Firmennamen**, z. B. NVIDIA · OpenAI · Anthropic · Stripe · Databricks · Coinbase · Reddit · Discord · Cloudflare · Notion · Scale AI · Figure · Perplexity · 1X · Cohere · GitLab und mehr.
 
-Abdeckung: **9 große internationale ATS + 4 globale Remote-Jobbörsen + 170 offizielle Portale chinesischer Unternehmen**. Die China-Abdeckung (universelle Parser für Feishu Hire / Moka / Beisen + eigene Portale von Tencent/NetEase/JD/Baidu/ByteDance/Unitree) ist die Lücke, die die meisten bestehenden Tools offen lassen.
+**Neu in v2**: 24 ATS plus ein Verzeichnis von ca. 90.000 Unternehmen (per Name nachschlagen, welches System eine Firma nutzt) · 12 unternehmensübergreifende Quellen (u. a. der Aggregator freehire sowie die staatlichen Jobbörsen Schwedens, Singapurs und Deutschlands) · quellenübergreifende Deduplizierung und Markierung von Personalvermittlern · Altersklassen nach Veröffentlichungsdatum · fortsetzbare Läufe · lokale Schnappschüsse für neue/entfernte Stellen · ein **MCP-Server**, den Ihr KI-Assistent direkt aufrufen kann.
 
-**Große internationale Marken funktionieren mit einem bloßen Firmennamen**, z. B. NVIDIA · OpenAI · Anthropic · Stripe · Databricks · Coinbase · Reddit · Discord · Cloudflare · Notion · Scale AI · Figure · Perplexity · 1X · Cohere · GitLab usw.
-
-> ⚠️ Es liest **Stellenanzeigen, die Unternehmen selbst veröffentlichen** — niemals Lebensläufe/persönliche Daten, niemals Login-geschützte Inhalte. Eigennutzung, niedrige Frequenz, höflicher Besucher. Siehe [Verantwortungsvolle Nutzung](#-verantwortungsvolle-nutzung--compliance).
+> ⚠️ Es liest nur **Stellenanzeigen, die Unternehmen selbst veröffentlichen** – keine Lebensläufe oder personenbezogenen Daten, keine Inhalte hinter einem Login, und es stoppt bei jeder Bot-Prüfung. Siehe „Verantwortungsvolle Nutzung“ unten.
 
 ## Funktionen
 
-| Funktion | Beschreibung |
+| Funktion | Was sie tut |
 |---|---|
-| **Pro Unternehmen (international)** | Ein Firmenname genügt, um 8 ATS automatisch zu prüfen (Greenhouse/Ashby/Lever/SmartRecruiters/Recruitee/Breezy/BambooHR/Personio); bei Treffer: volle JD + Abteilung + Standort + Datum + Gehalt |
-| **Globale Remote-Boards** | `--board` durchsucht mehrere Unternehmen: RemoteOK / Remotive / WeWorkRemotely / WorkingNomads |
-| **170 chinesische Unternehmen** | `--local`: **universelle** Parser für Feishu Hire / Moka / Beisen (Unternehmen hinzufügen = eine Zeile) + 6 eigene Portale. Verkörperte KI / LLM / Halbleiter / Automobil / Energie / Quant / Konzerne / Gaming |
-| **Stichwort-/Aktualitätsfilter** | `--keyword a,b,c` (Komma = ODER; sucht Titel/Abteilung/Standort/JD/Gehalt) · `--recent-days N` |
-| **Einheitliche strukturierte Ausgabe** | 15-Feld-Schema; `--json` gibt alles aus (inkl. voller JD) für die KI |
-| **Terminal-Zusammenfassung** | Standardmäßig Top-Unternehmen / -Abteilungen / -Standorte + Stellenliste |
-| **Datengetrieben** | Die chinesische Unternehmensliste ist eine Seed-Tabelle `companies.seed` — **Unternehmen hinzufügen = eine Zeile, kein Code** |
-| **Nur stdlib** | Einzelnes Einstiegsskript, null Abhängigkeiten (nur Moka braucht `pycryptodome`), läuft auf jedem `python3` |
+| **Nach Unternehmen** | Firmenname genügt: zuerst das Verzeichnis (ca. 90.000 Firmen in 24 ATS), sonst werden gängige Systeme geraten; oder exakt mit `--ats system slug` |
+| **Unternehmensübergreifend** | `--board` nach Land / Stichwort / letzten N Tagen: freehire, Workable-weite Suche, staatliche Jobbörsen, Remote-Boards; mehrere Quellen auf einmal, dedupliziert |
+| **Altersklassen** | Jede Stelle erhält 0–3 Monate / 3–6 Monate / über 6 Monate / ohne Datum; `--board` zeigt standardmäßig die letzten sechs Monate |
+| **Vermittler-Markierung** | Markiert Stellen von Headhuntern oder Zeitarbeitsfirmen (Feld `agency`); `--no-agency` entfernt sie |
+| **Fortsetzbar** | Wird eine Quelle gedrosselt oder fällt aus, laufen die anderen weiter; derselbe Befehl mit `--resume` holt nur das Fehlende nach |
+| **Lokale Schnappschüsse** | `--save` speichert in eine lokale SQLite-Datei mit erstem/letztem Sichtungsdatum; `--history` zeigt neue und entfernte Stellen je Lauf |
+| **MCP-Server** | `--mcp` – Claude Code / Codex usw. rufen es direkt auf (Firmenabfrage, Stellensuche, Verzeichnis) |
+| **China: 170 Firmen** | `--local`: drei universelle Parser (Feishu Hire / Moka / Beisen) + 6 Eigenportale großer Tech-Firmen |
+| **Private Plugins** | Quellen, deren Bedingungen keine öffentliche Verbreitung erlauben, liegen in Ihrem eigenen Plugin-Ordner (`--plugins`), außerhalb des Repos |
+| **Nur Standardbibliothek** | Keine Abhängigkeiten (nur der Moka-Parser braucht `pycryptodome`); läuft mit jedem `python3` |
 
 ## Schnellstart
 
 ```bash
 git clone https://github.com/simonlin1212/Hiring-Radar.git
 cd Hiring-Radar
-pip install pycryptodome      # optional, nur für chinesische Unternehmen mit Moka
-
-python3 hiring_radar.py --list             # alle abfragbaren Unternehmen / Boards auflisten
+python3 hiring_radar.py --directory-update   # Firmenverzeichnis laden (ca. 90.000 Firmen, lokal gespeichert; optional, empfohlen)
+python3 hiring_radar.py --list               # alle Quellen auflisten
 ```
 
 ```bash
-# 1) International: ein Firmenname genügt (figure/1x/anthropic/openai/scale/nvidia integriert) oder beliebig auto-prüfen
-python3 hiring_radar.py figure
+# 1) Nach Unternehmen: ein Name genügt
 python3 hiring_radar.py anthropic --keyword research
-python3 hiring_radar.py --greenhouse <slug>          # ATS explizit
+python3 hiring_radar.py xero                         # im Verzeichnis gefunden → richtiges System
+python3 hiring_radar.py --find xero                  # nur anzeigen, welches ATS es nutzt
+python3 hiring_radar.py --ats teamtailor <slug>      # System und Konto festlegen
 python3 hiring_radar.py --workday host,tenant,site
 
-# 2) China: --local <key> (Keys via --list)
-python3 hiring_radar.py --local agibot --keyword robot      # AgiBot (Feishu)
-python3 hiring_radar.py --local cambricon --keyword LLM     # Cambricon (Moka)
-python3 hiring_radar.py --local dreame                      # Dreame (Beisen)
-python3 hiring_radar.py --local tencent --keyword algorithm # Tencent (eigen)
+# 2) Unternehmensübergreifend: Land + Stichwort + Zeitraum
+python3 hiring_radar.py --board freehire --country AU,NZ --keyword receptionist,bookkeeper
+python3 hiring_radar.py --board freehire,workable --country AU --max 0 --json > au.json   # ohne Obergrenze
+python3 hiring_radar.py --board arbeitsagentur --keyword Buchhalter                        # Bundesagentur für Arbeit
+python3 hiring_radar.py --board all --keyword "AI engineer"                              # die 4 Remote-Boards
 
-# 3) Boards: „wo wird eingestellt" unternehmensübergreifend
-python3 hiring_radar.py --board all --keyword "AI engineer"
+# 3) Nach Abbruch fortsetzen / Schnappschüsse
+python3 hiring_radar.py --board freehire --country AU --max 0 --resume
+python3 hiring_radar.py anthropic --save          # der nächste Lauf zeigt neue/entfernte Stellen
+python3 hiring_radar.py --history
 
-# 4) Volle strukturierte Ausgabe (mit voller JD) zur Analyse
-python3 hiring_radar.py --local zhipu --keyword LLM --json > out.json
+# 4) Chinesische Unternehmen
+python3 hiring_radar.py --local agibot --keyword 机器人      # AgiBot (Feishu)
+python3 hiring_radar.py --local cambricon --keyword 大模型   # Cambricon (Moka; pip install pycryptodome)
+python3 hiring_radar.py --local tencent --keyword 算法       # Tencent (Eigenportal)
 ```
 
-**Gemeinsame Optionen**: `--keyword` · `--recent-days N` · `--limit N` · `--json` · `--list` · `--debug` · `--script <path>`
+**Häufige Optionen**: `--keyword a,b` (beliebiger Treffer) · `--recent-days N` (0 = unbegrenzt) · `--country AU,NZ` · `--max N` (Obergrenze je Quelle, Standard 1000, 0 = keine) · `--no-agency` · `--json` · `--limit N` · `--debug`
+
+**Umgebungsvariablen**: `HIRING_RADAR_HOME` (Verzeichnis, Schnappschüsse, Fortsetzungsstand; Standard `~/.hiring-radar`) · `HIRING_RADAR_DELAY` (Mindestabstand in Sekunden zwischen zwei Anfragen an dieselbe Website; Standard 0,3) · `HIRING_RADAR_PLUGINS` (privater Plugin-Ordner) · `HIRING_RADAR_INSECURE=1` (Zertifikatsprüfung aus, nur hinter einem abfangenden Proxy)
+
+Exit-Codes: `0` OK; `3` manche Quellen wurden nicht fertig (Abgerufenes wird trotzdem ausgegeben; `--resume` nutzen).
+
+## Für KI-Assistenten (MCP)
+
+```bash
+claude mcp add hiring-radar -- python3 /path/to/Hiring-Radar/hiring_radar.py --mcp
+```
+
+Fünf Werkzeuge: `company_jobs` (ein Unternehmen) · `search_jobs` (unternehmensübergreifend) · `find_company` (Verzeichnis) · `list_sources` · `job_history`. Stellenbeschreibungen werden in MCP-Ergebnissen auf 800 Zeichen gekürzt; den Volltext liefert die Kommandozeile mit `--json`.
 
 ## Ausgabefelder
 
-`title · company · dept · team · location · remote · type · date · date_updated · req_id · comp(Gehalt) · jd(voll) · url · apply_url · id` (15 Felder)
+Die 15 Felder aus v1 bleiben: `title · company · dept · team · location · remote · type · date · date_updated · req_id · comp (Gehalt) · jd (vollständig) · url · apply_url · id`
 
-GH / Ashby / Lever / Feishu / Moka / Beisen / Tencent / NetEase / JD / Baidu enthalten meist die volle JD; Workday und einzelne Moka-Mandanten nur auf Listenebene (Titel/Abteilung/Standort/Datum). `--json` gibt alles aus.
+v2 ergänzt 9: `country` (Ländercode) · `source` (Quelle) · `age` (Klasse 0-3m/3-6m/6m+/unknown) · `agency` (gefundener Vermittler-Begriff) · `also` (weitere Quellen derselben Stelle nach Deduplizierung) · `industry` · `size` (Firmengröße, falls die Quelle sie liefert) · `first_seen` · `last_seen` (nur mit Schnappschüssen)
+
+`--json`-Hülle: `source · total · matched · jobs` (wie v1) + `version · query · ages · sources · incomplete · candidates · saved`.
+
+## Funktionsweise
+
+```
+Firmenname / Land + Stichwort
+        │
+        ▼
+┌─────────────────────────┐
+│ Quellen wählen           │  Nach Firma: Verzeichnis → öffentliche Schnittstellen von 24 ATS
+│                         │  Übergreifend: freehire / Workable / staatliche Jobbörsen / Remote-Boards / Plugins
+│                         │  China: Feishu / Moka / Beisen / Eigenportale
+└──────────┬──────────────┘
+           │  Netz: ehrliche Kennung, Takt je Website, Rückzug bei 429, Stopp bei 403 oder Bot-Prüfung
+┌──────────▼──────────────┐
+│ 24 Felder + Altersklasse │  Filter Stichwort / Land / letzte N Tage; Deduplizierung; Vermittler-Markierung
+└──────────┬──────────────┘
+      ┌────┴─────┬──────────────┐
+      ▼          ▼              ▼
+  Terminal   --json (voll)   Schnappschüsse / MCP
+```
 
 ## Quellen
 
-**Internationale ATS (Auto-Prüfung per Name — 9 Systeme)**
-Greenhouse · Ashby · Lever · Workday · SmartRecruiters · Recruitee · Breezy · BambooHR · Personio
+**Nach Unternehmen: 24 ATS** (Firmenverzeichnis von [openroles](https://github.com/datascry/openroles), zur Laufzeit lokal heruntergeladen, nicht im Repo enthalten)
 
-Große Marken funktionieren mit einem bloßen Firmennamen (alle verifiziert), z. B.:
-**NVIDIA · OpenAI · Anthropic · Stripe · Databricks · Coinbase · Reddit · Discord · Cloudflare · Notion** · Scale AI · Figure · Perplexity · 1X · Cohere · GitLab …
+Greenhouse · Ashby · Lever · Workday · SmartRecruiters · Recruitee · Breezy · BambooHR · Personio · Workable · Teamtailor · Pinpoint · Rippling · JazzHR · Manatal · Hireology · Zoho Recruit · UKG/UltiPro · Jobvite · iCIMS · ApplicantPro · isolved Hire · CareerPlug · PageUp
 
-**Globale Remote-Boards (`--board`)**
-RemoteOK · Remotive · WeWorkRemotely · WorkingNomads · `all`
+**Unternehmensübergreifende Quellen `--board` (12)**
 
-**China — 170 Unternehmen (`--local`, offizielle Portale, Seed-Tabelle)**
-- **Feishu Hire**: Li Auto, XPeng, NIO, AgiBot, Galbot, RobotEra, Moonshot, MiniMax, Zhipu, Pony.ai, Hesai …
-- **Moka**: Hypergryph, Perfect World, Biren, Cambricon, High-Flyer, Ubiquant, SHEIN, Bosch …
-- **Beisen** (Großindustrie / Automobil / Haushaltsgeräte / schwere Maschinen): Dreame, Chery, Leapmotor, BOE, SANY …
-- **Eigene**: Tencent, NetEase, JD, Baidu, ByteDance, Unitree
+| Quelle | Abdeckung | Hinweise |
+|---|---|---|
+| `freehire` | Weltweit (nach eigenen Angaben ca. 3,3 Mio. offene Stellen) | Öffentliche API von [freehire](https://github.com/strelov1/freehire), bündelt 225 Quellen, volle Beschreibungen, Filter nach Land / Stichwort / letzten N Tagen |
+| `workable` | Weltweit | Workable-weite Stellensuche, Filter nach Land / Stichwort |
+| `jobtech` | Schweden | Offene Daten der schwedischen Arbeitsverwaltung, volle Beschreibungen |
+| `mycareersfuture` | Singapur | Staatliches Jobportal Singapurs, mit Gehalt, ohne Beschreibung |
+| `arbeitsagentur` | Deutschland | Bundesagentur für Arbeit, ohne Beschreibung |
+| `remoteok` · `remotive` · `weworkremotely` · `workingnomads` | Remote | `--board all` = diese 4 |
+| `reed` · `adzuna` · `usajobs` | UK / 19 Länder / US-Bundesbehörden | Eigene kostenlose Schlüssel nötig (`REED_API_KEY`, `ADZUNA_APP_ID`+`ADZUNA_APP_KEY`, `USAJOBS_API_KEY`+`USAJOBS_EMAIL`); nach offizieller Doku geschrieben, vom Maintainer nicht live getestet |
 
-> Vollständige Liste: `python3 hiring_radar.py --list`
+**China: 170 Unternehmen (`--local`)**: Feishu Hire (Li Auto / XPeng / NIO / AgiBot / Moonshot AI / MiniMax / Zhipu…) · Moka (Hypergryph / Cambricon / High-Flyer / SHEIN…) · Beisen (Dreame / Chery / Leapmotor / BOE / SANY…) · Eigenportale (Tencent / NetEase / JD / Baidu / ByteDance / Unitree). Vollständige Liste: `--list`.
 
-## Unternehmen hinzufügen = eine Zeile (kein Code)
+**Nicht unterstützt / bekannte Grenzen**
+- **Paycom**: seine robots.txt erlaubt den Stellenlisten-Endpunkt nicht, daher wird er nicht gelesen.
+- **iCIMS**: das `datePosted` in den Seiten wird vom System erzeugt (aktuelle Zeit minus zwei Jahre); dieses Werkzeug nutzt stattdessen das Aktualisierungsdatum aus der Sitemap. Veröffentlichungsdaten aus iCIMS-Daten anderer Werkzeuge mit Vorsicht behandeln.
+- Das Verzeichnis enthält viele inaktive Konten – eine Firma ohne Stellen ist normal; gleichnamige Firmen können kollidieren – bei mehreren Treffern werden alle Kandidaten gelistet.
+- Dedupliziert wird nach Land + Firma + Stellentitel: derselbe Titel einer Firma in mehreren Städten eines Landes wird zu einer Zeile.
 
-Die chinesische Unternehmensliste liegt in `parsers/companies.seed` (durch `|` getrennt), beim Start automatisch geladen. Eine Zeile hinzufügen:
+> **Zu Moka (ehrlicher Hinweis)**: Moka-Schnittstellen verschleiern Antworten leicht im Frontend (AES-128-CBC, Schlüssel und IV werden mit dem öffentlichen Frontend ausgeliefert). Das Werkzeug nutzt diese öffentlichen Werte, um genau die öffentliche Stellenliste zu erhalten, die ein Browser zeigt – kein Knacken von Logins, keine Umgehung der Authentifizierung. Streng genommen „spielt es die Frontend-Verarbeitung nach“, etwas grauer als reines JSON-Lesen; nur für lokale Forschung, auf eigenes Risiko. Für die sauberste Haltung alle `moka`-Zeilen in `parsers/companies.seed` sowie die eingebauten Zeilen `yostar`/`tesla-cn` in `radar/local.py` löschen.
+
+## Private Plugins
+
+Für große Plattformen, deren Bedingungen keine Veröffentlichung von Scraper-Code erlauben, schreiben Sie ein eigenes Plugin außerhalb des Repos:
+
+```bash
+python3 hiring_radar.py --plugins ~/my-plugins --board myboard --country AU
+```
+
+Jede `.py`-Datei im Plugin-Ordner, die nicht mit `_` beginnt, ist eine Quelle mit `NAME`, `DESC`, `FILTERS` und `pages(q, state=None)` (gleiche Schnittstelle wie `radar/boards/`); Dateien mit `_` am Anfang können gemeinsamen Code enthalten. Plugins laufen mit Ihren Rechten; für die Bedingungen der besuchten Websites sind Sie selbst verantwortlich.
+
+## Unternehmen hinzufügen = eine Zeile (China)
+
+Die chinesische Firmenliste ist `parsers/companies.seed` (`|`-getrennt); eine Firma = eine Zeile:
 
 ```
-key | feishu | Unternehmen | Portal-Domain (z. B. nio.jobs.feishu.cn)
-key | moka   | Unternehmen | orgId | siteId   # beide in der URL app.mokahr.com/social-recruitment/{orgId}/{siteId}
-key | beisen | Unternehmen | slug             # Portal {slug}.zhiye.com, z. B. dreame
+key | feishu | Firmenname | Portal-Domain (z. B. nio.jobs.feishu.cn)
+key | moka   | Firmenname | orgId | siteId
+key | beisen | Firmenname | slug
 ```
 
-Für eine ganz neue Quelle (Parser schreiben) siehe [CONTRIBUTING.md](CONTRIBUTING.md).
+Neue ATS oder übergreifende Quellen: siehe [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Branchensignal (sekundär)
+## Branchensignal
 
-Einstellungen sind ein **Frühindikator**. Beispiel:
+Stellenanzeigen sind ein **Frühindikator**: wo eine Firma expandiert, in welche Richtung und in welcher Phase, zeigt sich oft Monate vor den Geschäftszahlen. Linien-Entwickler gesucht = Linie im Aufbau; QS/Wartung gesucht = Dauerproduktion in Vorbereitung; Nachtschicht gesucht = Hochlauf steht bevor. Mit `--save` regelmäßig Schnappschüsse anlegen, mit `--history` den Rhythmus sehen.
 
-- Einstellung von Linien-Ingenieuren = Linie wird noch aufgebaut; QA/Wartung = Vorbereitung auf Dauerproduktion; Nachtschichten = Hochlauf steht bevor; Wareneingangs-QA/Lieferantenqualität = Onboarding externer Lieferanten.
-- `--local <Unternehmen> --keyword factory,production,assembly` für die Fertigungsseite; `--recent-days` für Aktuelles; **monatliche Snapshots** der Schlüsselwerte für den Trend.
+> ⚠️ **Einstellungen ≠ Produktion**: Stellen sind Input, nicht Output; „sucht“ kann auch Vorratsbildung oder ein Gegensignal sein. Ergebnisse als Signal behandeln, nicht als Anlageberatung.
 
-> ⚠️ **Einstellung ≠ Produktion.** Stellen sind „Inputs", keine „Outputs"; Ausbeute/Hochlauf/Lieferkette liegen dazwischen. Als Signal behandeln, nicht als Anlageberatung.
+## Projektstruktur
+
+```
+Hiring-Radar/
+├── hiring_radar.py     # Kommandozeilen-Einstieg (v1-Nutzung unverändert)
+├── radar/              # Kernpaket
+│   ├── http.py         # Netz: ehrliche Kennung, Takt, Rückzug, Stopp bei Sperre
+│   ├── schema.py       # einheitliche Felder, Datum, Altersklassen
+│   ├── ats/            # nach Unternehmen: eine Datei je ATS
+│   ├── boards/         # übergreifende Quellen
+│   ├── directory.py    # Firmenverzeichnis (zur Laufzeit geladen)
+│   ├── process.py      # Deduplizierung, Vermittler-Markierung
+│   ├── sweep.py        # Mehrquellen-Abruf, Fortsetzen
+│   ├── store.py        # lokale Schnappschüsse (SQLite)
+│   ├── local.py        # China / Eigenportal-Parser
+│   ├── plugins.py      # Lader für private Plugins
+│   └── mcp.py          # MCP-Server
+├── parsers/            # China / Eigenportal-Parser + companies.seed
+├── tests/              # smoke_test.py · test_offline.py (offline, ohne Netz)
+└── THIRD_PARTY_NOTICES.md · CHANGELOG.md · CONTRIBUTING.md · LICENSE
+```
+
+## Technik & Abhängigkeiten
+
+- **Python 3.8+**, Kern nur Standardbibliothek (urllib / json / re / ssl / argparse / sqlite3 / xml.etree)
+- **`pycryptodome`**: nur für Moka-Parser (`pip install pycryptodome`)
+- Internetzugang nötig (manche internationale Websites ggf. per Proxy); SSL-Zertifikate werden standardmäßig geprüft, hinter einem abfangenden Proxy `HIRING_RADAR_INSECURE=1` setzen
 
 ## Verantwortungsvolle Nutzung / Compliance
 
-Ein **persönliches / Forschungs-, lokales + Open-Source-**Tool. Verantwortungsvoll nutzen:
+Ein **persönliches / Forschungs-, lokales + Open-Source**-Werkzeug. Bitte verantwortungsvoll nutzen:
 
-- **Nur Stellenanzeigen — niemals Lebensläufe / persönliche Daten.**
-- **Nur öffentliche, login-freie Endpunkte**: bei Login-Wall / Captcha / aktivem Anti-Bot **nicht umgehen**.
-- **Nur lokal**: kein Hosting / Upload / Server. Bei Weiterveröffentlichung der Daten Compliance selbst prüfen.
-- **Niedrige Frequenz, höflicher Besucher**; kein kommerzieller Weiterverkauf. „Öffentlich sichtbar" ≠ „frei aggregierbar und weiterveröffentlichbar".
+- **Nur Stellenanzeigen lesen – nie Lebensläufe / personenbezogene Daten** (personenbezogene Daten fallen unter Chinas PIPL – nicht tun).
+- **Nur öffentliche Schnittstellen ohne Login**: Login-Sperre / Captcha / aktiver Bot-Schutz wird **nicht umgangen**; 403 oder eine Bot-Prüfseite beendet den Lauf; keine Proxy-Pools, keine gefälschten Browser-Fingerabdrücke.
+- **Ehrliche Kennung, niedrige Frequenz**: Der User-Agent nennt HiringRadar und die Projekt-URL; standardmäßig 0,3 Sekunden zwischen zwei Anfragen an dieselbe Website; bei 429 wird wie verlangt gewartet, und wenn es weiter scheitert, stoppt der Lauf und wartet auf Ihr `--resume`. robots.txt wird vor dem Aufnehmen einer neuen Quelle geprüft (deshalb kein Paycom).
+- **Schlüssel nur in Umgebungsvariablen**: Quellen mit Schlüssel lesen ihn aus der Umgebung; in Fehlermeldungen werden Schlüssel maskiert.
+- **Nur lokal**: kein Hosting / Upload / Server; Daten landen nur auf Ihrem Rechner. Bei Weiterveröffentlichung Compliance selbst prüfen; kein kommerzieller Weiterverkauf. Das Firmenverzeichnis steht unter CC BY-SA 4.0 – Weitergabe nur mit Namensnennung und gleicher Lizenz (siehe [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
+- „Öffentlich sichtbar“ ≠ „frei aggregier- und weiterveröffentlichbar“ – massenhaftes Scrapen + Weiterveröffentlichen kann in vielen Rechtsordnungen unlauterer Wettbewerb sein (inkl. chinesischer Rechtsprechung).
 
 ## Haftungsausschluss
 
-1. **Du kontrollierst deine Daten.** Läuft lokal; sammelt und sendet nichts.
-2. **Du befolgst die AGB Dritter.** Halte die ToS jeder Plattform ein; kein Spam, keine Überlastung.
-3. **Signale, keine Fakten.** Recruiting-Daten sind ein Signal; Branchen-/Investmenturteile liegen in deiner Verantwortung.
+1. **Sie kontrollieren Ihre Daten.** Das Werkzeug läuft lokal; es sammelt und lädt nichts hoch.
+2. **Sie halten Drittbedingungen ein.** Beachten Sie die Bedingungen jeder Plattform; nutzen Sie es nicht, um Arbeitgeber zu belästigen oder ihre Systeme zu überlasten.
+3. **Signale, keine Fakten.** Stellendaten sind ein Signal, keine Gewissheit; Branchen-/Anlageentscheidungen liegen in Ihrer Verantwortung.
 
-Unter [MIT-Lizenz](LICENSE) „wie besehen", ohne jegliche Gewährleistung.
+Bereitgestellt unter der [MIT-Lizenz](LICENSE) „wie besehen“, ohne jede Gewährleistung. Code und Daten Dritter: siehe [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## License
 
 [MIT](LICENSE)
 
-Ein lokales Tool, das offizielle offene Stellen von Unternehmen weltweit und in China aggregiert. PRs zum Hinzufügen weiterer Unternehmen / Quellen willkommen (siehe [CONTRIBUTING.md](CONTRIBUTING.md)).
+PRs für weitere Unternehmen / Quellen willkommen (siehe [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 **Author:** Simon Lin · X [@linsizhen](https://x.com/linsizhen) · Email: [simonlin0423@gmail.com](mailto:simonlin0423@gmail.com)
