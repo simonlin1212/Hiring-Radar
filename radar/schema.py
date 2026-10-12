@@ -59,6 +59,12 @@ def _parse(d):
             return datetime.strptime(m.group(0), "%Y-%m-%d").replace(tzinfo=timezone.utc)
         except ValueError:
             return None
+    m = re.search(r"(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日", s)   # 中文日期（腾讯等）
+    if m:
+        try:
+            return datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)), tzinfo=timezone.utc)
+        except ValueError:
+            return None
     try:
         dt = email.utils.parsedate_to_datetime(s)
         return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
@@ -80,26 +86,44 @@ def iso_day(d):
     return dt.strftime("%Y-%m-%d") if dt else ""
 
 
+def _relative(d):
+    """相对日期（Workday 的 Posted 3 Days Ago 等）→ (天数, 是否只是下界)；认不出返回 (None, False)。"""
+    sl = str(d).lower()
+    if "today" in sl:
+        return 0, False
+    if "yesterday" in sl:
+        return 1, False
+    m = re.search(r"(\d+)(\+?)\s*day", sl)
+    if m:
+        return int(m.group(1)), bool(m.group(2))
+    m = re.search(r"(\d+)(\+?)\s*month", sl)
+    if m:
+        return int(m.group(1)) * 30, bool(m.group(2))
+    return None, False
+
+
 def days_ago(d, now=None):
-    """各种日期字符串 → 距今天数(int) 或 None。另认 Workday 的相对日期（Posted 30+ Days Ago）。"""
+    """各种日期字符串 → 距今天数(int) 或 None。另认相对日期（Posted 3 Days Ago）；
+    「30+ Days Ago」只是下界，说不准具体多久，按无日期处理（返回 None），能否确定超期见 older_than。"""
     if not d:
         return None
     now = now or datetime.now(timezone.utc)
     dt = _parse(d)
     if dt:
         return (now - dt).days
-    sl = str(d).lower()
-    if "today" in sl:
-        return 0
-    if "yesterday" in sl:
-        return 1
-    m = re.search(r"(\d+)\+?\s*day", sl)
-    if m:
-        return int(m.group(1))
-    m = re.search(r"(\d+)\+?\s*month", sl)
-    if m:
-        return int(m.group(1)) * 30
-    return None
+    n, lower = _relative(d)
+    return None if lower else n
+
+
+def older_than(d, days, now=None):
+    """能确定发布早于 days 天前才返回 True；无日期、说不准的（如「30+ 天前」而 days ≥ 30）返回 False（保留）。"""
+    n = days_ago(d, now)
+    if n is not None:
+        return n > days
+    if not d or _parse(d):
+        return False
+    lo, lower = _relative(d)
+    return lower and lo > days
 
 
 def age_of(d, now=None):

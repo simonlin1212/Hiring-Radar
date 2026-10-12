@@ -28,6 +28,7 @@ key | beisen | 公司名 | slug
 - **注册**：
   - 通用型（一个脚本覆盖多家，如 feishu/moka）→ 走 `companies.seed`。
   - 单站型（一家一个，如腾讯/网易）→ 在 `radar/local.py` 的 `LOCAL_PARSERS` 加一行 `"key": {"command":"python3","args":["parsers/xxx.py","{keyword}"]}`。
+- **联网**：用 `radar.http` 的 `get_json` / `get_text` / `post_json` / `post_form`（参考现有脚本开头的 import），不要自己用 `urllib`，也不要设浏览器 User-Agent（飞书招聘、字节跳动是仅有的例外，接口不接受程序身份）。目标网站拒绝访问时，抛 `Blocked` 停下。
 - **参考实现**：`parsers/tencent.py`（最简单的单站 JSON）、`parsers/feishu.py`（通用型 + 自动探测）、`parsers/moka.py`（带解密的通用型）。
 
 ## 3. 接一个新的招聘系统（ATS，按公司查）
@@ -36,7 +37,7 @@ key | beisen | 公司名 | slug
 
 - `items` 每条用 `radar.schema.rec(...)` 生成（统一 24 字段，没有的留空）；日期用 `iso_day()` 转成 `YYYY-MM-DD`，HTML 用 `strip_html()` 转纯文本。
 - `source` 写成 `xxx/{slug}`。
-- 联网一律用 `radar.http` 的 `get_json` / `get_text` / `post_json`：它们负责如实报身份、限速、429 退避、403/人机验证就停。不要自己用 `urllib`。
+- 联网一律用 `radar.http` 的 `get_json` / `get_text` / `post_json` / `post_form`：它们负责如实报身份、限速、429 退避、403/人机验证就停。不要自己用 `urllib`。
 - `slug` 已由 `check_slug` 校验过（单段字母数字）；`meta` 来自公司名录（如 Workday 的 host/site）。meta 里的域名、编号**必须先用正则校验**再拼进 URL，防止把请求改写到别的网站（SSRF）。
 - 页面有 schema.org `JobPosting` 的，可直接用 `radar/ats/_jsonld.py`。
 
@@ -58,6 +59,7 @@ def pages(q, state=None):         # q 是 boards.Query：keywords / countries / 
 
 - 一次返回全部的简单来源，可写 `fetch()` 再用 `pages = single_page(fetch)` 包一下（参考 `remotive.py`）。
 - 只覆盖一个国家的来源，`q.countries` 不含该国时直接返回（参考 `jobtech.py`）。
+- 上游翻页有上限、拿不全时，调用 `q.truncate("说明")`：结果会标成不全（退出码 3），提示用户缩小查询（参考 `freehire.py`）。
 - 需要密钥的来源，用 `radar/boards/_keys.py` 的 `need()` 从环境变量读，并在 `boards/__init__.py` 的 `NEEDS_KEY` 登记。密钥不要写进日志或报错信息；`radar.http.safe()` 会给 URL 里常见的密钥参数打码。
 - 在 `boards/__init__.py` 的 import 和 `BOARDS` 各加一行。
 

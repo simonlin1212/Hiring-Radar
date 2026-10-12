@@ -1,7 +1,6 @@
 """瑞典公共就业服务（Arbetsförmedlingen）的开放接口 JobTech JobSearch：全国在招职位，免注册，含完整 JD。
 数据是开放数据（jobtechdev.se）。单次查询最多翻到第 2,100 条（offset ≤ 2000）；总数更多时按发布时间
 每 12 小时拆一段分别查（瑞典每天新增 2,000 多条），请求数随数据量增加，不是绕限流。"""
-import sys
 from datetime import datetime, timedelta, timezone
 
 from ..countries import code
@@ -79,7 +78,7 @@ def pages(q, state=None):
                 off += len(rows)
                 last = len(rows) < PAGE or off >= total or off > CAP
                 if last and total > CAP + PAGE:
-                    sys.stderr.write(f"[!] JobTech {parts[pi]} 共 {total} 条，超过翻页上限，只拉到前 {off} 条\n")
+                    q.truncate(f"JobTech {parts[pi]} 共 {total} 条，超过翻页上限，只拉到前 {off} 条")
                 nxt = {"k": ki, "parts": parts, "p": pi + 1, "off": 0} if last else {"k": ki, "parts": parts, "p": pi, "off": off}
                 yield [to_rec(h) for h in rows], nxt
                 if last:

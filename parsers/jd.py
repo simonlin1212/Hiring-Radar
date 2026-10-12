@@ -3,18 +3,11 @@
 """hiring_radar local-parser：京东官方招聘 API → JSON(stdout)。
 用法: python3 jd.py [keyword] [pages]   匿名 POST(需 Referer/X-Requested-With)，返回顶层数组。"""
 import os
-import sys, json, ssl, urllib.request, urllib.parse
+import sys, json
 
-CTX = ssl.create_default_context()
-if os.environ.get("HIRING_RADAR_INSECURE") == "1":  # 默认验证 TLS 证书；仅拦截式代理(证书被替换)时设此环境变量关闭
-    CTX.check_hostname = False
-    CTX.verify_mode = ssl.CERT_NONE
-HEAD = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-    "Content-Type": "application/x-www-form-urlencoded",
-    "Referer": "https://zhaopin.jd.com/web/job/job_info_list/3",
-    "X-Requested-With": "XMLHttpRequest",
-}
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # 仓库根目录
+from radar.http import post_form  # noqa: E402  统一联网：如实报身份、限速、429 退避、被拦就停
+HEAD = {"Referer": "https://zhaopin.jd.com/web/job/job_info_list/3", "X-Requested-With": "XMLHttpRequest"}
 API = "https://zhaopin.jd.com/web/job/job_list"
 
 
@@ -24,8 +17,7 @@ def fetch(keyword="", pages=6, size=50):
         form = {"pageIndex": p, "pageSize": size, "jobType": 3}
         if keyword:
             form["keyword"] = keyword
-        req = urllib.request.Request(API, data=urllib.parse.urlencode(form).encode(), headers=HEAD)
-        d = json.load(urllib.request.urlopen(req, timeout=25, context=CTX))
+        d = post_form(API, form, headers=HEAD)
         rows = d if isinstance(d, list) else (d.get("data") or d.get("list") or [])
         if not rows:
             break

@@ -8,20 +8,17 @@
   例:  python3 moka.py yostar 145292 悠星
 """
 import os
-import sys, json, re, ssl, base64, html as _html, urllib.request
+import sys, json, re, base64, html as _html
 try:
     from Crypto.Cipher import AES
     from Crypto.Util.Padding import unpad
 except ImportError:
     sys.exit("[moka] 需要 pycryptodome 才能解密 Moka 响应：pip install pycryptodome")
 
-CTX = ssl.create_default_context()
-if os.environ.get("HIRING_RADAR_INSECURE") == "1":  # 默认验证 TLS 证书；仅拦截式代理(证书被替换)时设此环境变量关闭
-    CTX.check_hostname = False
-    CTX.verify_mode = ssl.CERT_NONE
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # 仓库根目录
+from radar.http import post_json  # noqa: E402  统一联网：如实报身份、限速、429 退避、被拦就停
 IV = b"de7c21ed8d6f50fe"
-H = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", "Content-Type": "application/json",
-     "Accept": "application/json", "Origin": "https://app.mokahr.com"}
+H = {"Origin": "https://app.mokahr.com"}
 API = "https://app.mokahr.com/api/outer/ats-apply/website/jobs/v2"
 
 
@@ -51,8 +48,7 @@ def _decrypt(d):
 
 def _call(org, site, limit, offset):
     body = {"orgId": org, "siteId": int(site), "locale": "zh-CN", "limit": limit, "offset": offset}
-    req = urllib.request.Request(API, data=json.dumps(body).encode(), headers=H)
-    return _decrypt(json.load(urllib.request.urlopen(req, timeout=25, context=CTX)))
+    return _decrypt(post_json(API, body, headers=H))
 
 
 def _jobs(resp):

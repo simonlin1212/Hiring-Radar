@@ -5,8 +5,12 @@
     FILTERS   该来源能在服务端过滤的条件子集：{"keyword", "country", "recent_days"}
     pages(q, state=None)  生成器，每拉一页 yield (items, state)；state 可 JSON 序列化，
                           传回 pages(q, state) 能从断点继续（sweep --resume 用）。
+                          上游翻页有上限、只能拿到一部分时，调用 q.truncate("说明")，结果会标为不完整。
 没有服务端过滤的条件，由调用方在本地补过滤。私有插件(plugins.py)也注册到这里。
 """
+import sys
+
+
 class Query:
     """一次查询的条件。keywords/countries 为列表；recent_days=0 表示不限；max_items=0 表示不限。"""
 
@@ -15,6 +19,12 @@ class Query:
         self.countries = [c.strip().upper() for c in countries if c and c.strip()]
         self.recent_days = int(recent_days or 0)
         self.max_items = int(max_items or 0)
+        self.truncated = []   # 本次运行里来源报告的上游截断（不进查询指纹）
+
+    def truncate(self, msg):
+        """来源报告：上游翻页上限只给了一部分。打印提示，并让 sweep 把这个来源标为不完整。"""
+        sys.stderr.write(f"[!] {msg}\n")
+        self.truncated.append(msg)
 
     def as_dict(self):
         return {"keywords": self.keywords, "countries": self.countries,

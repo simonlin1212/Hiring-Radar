@@ -3,17 +3,11 @@
 """hiring_radar local-parser：百度官方招聘 API → JSON(stdout)。
 用法: python3 baidu.py [keyword] [pages]   匿名 POST(必须带 Referer)，recruitType=SOCIAL。"""
 import os
-import sys, json, ssl, urllib.request, urllib.parse
+import sys, json
 
-CTX = ssl.create_default_context()
-if os.environ.get("HIRING_RADAR_INSECURE") == "1":  # 默认验证 TLS 证书；仅拦截式代理(证书被替换)时设此环境变量关闭
-    CTX.check_hostname = False
-    CTX.verify_mode = ssl.CERT_NONE
-HEAD = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-    "Content-Type": "application/x-www-form-urlencoded",
-    "Referer": "https://talent.baidu.com/jobs/social",
-}
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # 仓库根目录
+from radar.http import post_form  # noqa: E402  统一联网：如实报身份、限速、429 退避、被拦就停
+HEAD = {"Referer": "https://talent.baidu.com/jobs/social"}
 API = "https://talent.baidu.com/httservice/getPostListNew"
 
 
@@ -22,8 +16,7 @@ def fetch(keyword="", pages=10, size=10):  # 百度 pageSize 只接受小值(>20
     out = []
     for p in range(1, pages + 1):
         form = {"recruitType": "SOCIAL", "pageSize": size, "keyWord": keyword, "curPage": p}
-        req = urllib.request.Request(API, data=urllib.parse.urlencode(form).encode(), headers=HEAD)
-        d = json.load(urllib.request.urlopen(req, timeout=25, context=CTX))
+        d = post_form(API, form, headers=HEAD)
         data = d.get("data") or {}
         rows = data.get("list") or []
         if not rows:

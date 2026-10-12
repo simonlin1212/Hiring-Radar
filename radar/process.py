@@ -1,5 +1,6 @@
 """结果处理：时间分档、标疑似中介、多来源去重。规则是粗筛，用于计数和过滤，不是精确判定。"""
 import re
+import unicodedata
 
 from .schema import AGES, age_of, days_ago
 
@@ -39,17 +40,27 @@ def annotate(items, now=None):
     return items
 
 
+def _fold(s):
+    """统一全角/半角、大小写；保留各种文字的字母和数字（中文、韩文等不能被当成标点清掉）。"""
+    return unicodedata.normalize("NFKC", s or "").lower()
+
+
 def norm_company(s):
-    s = re.sub(r"[^a-z0-9 ]", " ", (s or "").lower())
+    s = re.sub(r"[\W_]+", " ", _fold(s))
     return re.sub(r"\s+", "", _SUFFIX.sub(" ", s))
 
 
 def norm_title(s):
-    return re.sub(r"[^a-z0-9]", "", (s or "").lower())
+    return re.sub(r"[\W_]+", "", _fold(s))
 
 
 def dedupe_key(it):
-    return f"{(it.get('country') or '').split(',')[0]}|{norm_company(it.get('company'))}|{norm_title(it.get('title'))}"
+    """国家 + 公司名 + 职位名。公司名或职位名为空时不做模糊合并，只认同一来源的同一职位 ID/链接。"""
+    company, title = norm_company(it.get("company")), norm_title(it.get("title"))
+    if company and title:
+        return f"{(it.get('country') or '').split(',')[0]}|{company}|{title}"
+    jid = it.get("id") or it.get("url")
+    return f"id|{it.get('source', '')}|{jid}" if jid else f"obj|{id(it)}"
 
 
 def dedupe(items, order=()):

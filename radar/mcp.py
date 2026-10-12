@@ -11,7 +11,7 @@ import sys
 import traceback
 
 from . import __version__, ats, boards, directory, http, process, store, sweep
-from .schema import days_ago, strip_html
+from .schema import older_than, strip_html
 
 PROTOCOL = "2025-06-18"
 JD_CHARS = 800
@@ -74,8 +74,18 @@ def _slim(it):
     return out
 
 
+def _int(args, key, default):
+    v = args.get(key)
+    if v is None or v == "":
+        return default
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        raise ValueError(f"{key} 应为整数，收到 {v!r}")
+
+
 def _limit(args):
-    return max(1, min(int(args.get("limit") or 50), 500))
+    return max(1, min(_int(args, "limit", 50) or 50, 500))
 
 
 def _kws(v):
@@ -93,12 +103,12 @@ def company_jobs(args):
             raise ValueError(f"ats 需为以下之一（Workday 请只给公司名，走名录）：{', '.join(k for k in ats.REGISTRY if k != 'workday')}")
         explicit = (kind, ats.check_slug(kind, args.get("slug") or ""))
     kws = _kws(args.get("keywords"))
+    days, n = _int(args, "recent_days", 0), _limit(args)   # 参数先校验，不对就不发请求
     items, src, cands = _company_items(args.get("company", ""), explicit, "", True)
     process.annotate(items)
     filt = [it for it in items if sweep.keyword_match(it, kws)]
-    if args.get("recent_days"):
-        filt = [it for it in filt if (days_ago(it.get("date")) or 0) <= int(args["recent_days"])]
-    n = _limit(args)
+    if days:
+        filt = [it for it in filt if not older_than(it.get("date"), days)]   # 无日期、说不准的保留
     return {"source": src, "total": len(items), "matched": len(filt), "returned": min(n, len(filt)),
             "ages": process.age_counts(filt), "candidates": [f"{c['ats']}/{c['slug']}" for c in cands],
             "jobs": [_slim(it) for it in filt[:n]]}
@@ -111,17 +121,16 @@ def search_jobs(args):
     names = list(dict.fromkeys(names))
     if not names:
         raise ValueError("boards 不能为空，可选来源见 list_sources")
-    days = args.get("recent_days")
     q = boards.Query(_kws(args.get("keywords")), _kws(args.get("countries")),
-                     183 if days is None else int(days), int(args.get("max_per_source") or 200))
+                     _int(args, "recent_days", 183), _int(args, "max_per_source", 200) or 200)
+    n = _limit(args)
     items, report = sweep.run(names, q)
     process.annotate(items)
     if len(names) > 1:
         items = process.dedupe(items, order=names)
     if args.get("no_agency"):
         items = [it for it in items if not it.get("agency")]
-    n = _limit(args)
-    return {"sources": report, "incomplete": any("error" in r for r in report.values()), "matched": len(items),
+    return {"sources": report, "incomplete": sweep.incomplete(report), "matched": len(items),
             "returned": min(n, len(items)), "ages": process.age_counts(items),
             "agency": sum(1 for it in items if it.get("agency")), "jobs": [_slim(it) for it in items[:n]]}
 
@@ -147,13 +156,26 @@ HANDLERS = {"company_jobs": company_jobs, "search_jobs": search_jobs, "find_comp
             "list_sources": list_sources, "job_history": job_history}
 
 
+def _bad(mid, msg):
+    return {"jsonrpc": "2.0", "id": mid, "error": {"code": -32602, "message": msg}}
+
+
 def handle(msg):
-    """处理一条消息，返回要回的消息（通知返回 None）。"""
+    """处理一条消息，返回要回的消息（通知返回 None）。结构不对的请求回 JSON-RPC 错误，服务不中断。"""
     mid, method = msg.get("id"), msg.get("method")
     if mid is None:   # 通知（如 notifications/initialized），不回
         return None
+    if not isinstance(mid, (str, int)) or isinstance(mid, bool):
+        return {"jsonrpc": "2.0", "id": None, "error": {"code": -32600, "message": "id 应为字符串或数字"}}
+    params = msg.get("params")
+    if params is None:
+        params = {}
+    if not isinstance(params, dict):
+        return _bad(mid, "params 应为对象")
     if method == "initialize":
-        ver = (msg.get("params") or {}).get("protocolVersion") or PROTOCOL
+        ver = params.get("protocolVersion") or PROTOCOL
+        if not isinstance(ver, str):
+            ver = PROTOCOL
         res = {"protocolVersion": ver, "capabilities": {"tools": {}},
                "serverInfo": {"name": "hiring-radar", "version": __version__}}
     elif method == "ping":
@@ -161,19 +183,24 @@ def handle(msg):
     elif method == "tools/list":
         res = {"tools": TOOLS}
     elif method == "tools/call":
-        p = msg.get("params") or {}
-        fn = HANDLERS.get(p.get("name"))
+        name, args = params.get("name"), params.get("arguments")
+        fn = HANDLERS.get(name) if isinstance(name, str) else None
         if not fn:
-            return {"jsonrpc": "2.0", "id": mid, "error": {"code": -32602, "message": f"未知工具：{p.get('name')}"}}
+            return _bad(mid, f"未知工具：{name!r}")
+        if args is None:
+            args = {}
+        if not isinstance(args, dict):
+            return _bad(mid, "arguments 应为对象")
         try:
             with contextlib.redirect_stdout(sys.stderr):
-                data = fn(p.get("arguments") or {})
+                data = fn(args)
             res = {"content": [{"type": "text", "text": json.dumps(data, ensure_ascii=False)}], "isError": False}
         except Exception as e:   # 工具出错按 MCP 约定放进结果里，让调用方看到原因
-            sys.stderr.write(f"[hiring-radar] {p.get('name')} 出错：{type(e).__name__}: {e}\n")
+            why = http.safe(f"{type(e).__name__}: {e}")
+            sys.stderr.write(f"[hiring-radar] {name} 出错：{why}\n")
             if http.DEBUG:
-                traceback.print_exc(file=sys.stderr)
-            res = {"content": [{"type": "text", "text": f"{type(e).__name__}: {e}"}], "isError": True}
+                sys.stderr.write(http.safe(traceback.format_exc()))
+            res = {"content": [{"type": "text", "text": why}], "isError": True}
     else:
         return {"jsonrpc": "2.0", "id": mid, "error": {"code": -32601, "message": f"不支持的方法：{method}"}}
     return {"jsonrpc": "2.0", "id": mid, "result": res}
@@ -181,6 +208,7 @@ def handle(msg):
 
 def serve(inp=None, out=None):
     inp, out = inp or sys.stdin, out or sys.stdout
+    http.guard_stderr()
     sys.stderr.write(f"[hiring-radar] MCP 服务已启动（v{__version__}，stdio）\n")
     for line in inp:
         line = line.strip()
@@ -191,8 +219,14 @@ def serve(inp=None, out=None):
         except ValueError:
             reply = {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": "不是合法 JSON"}}
         else:
-            reply = handle(msg) if isinstance(msg, dict) else \
-                {"jsonrpc": "2.0", "id": None, "error": {"code": -32600, "message": "不支持批量请求"}}
+            try:
+                reply = handle(msg) if isinstance(msg, dict) else \
+                    {"jsonrpc": "2.0", "id": None, "error": {"code": -32600, "message": "不支持批量请求"}}
+            except Exception as e:   # 兜底：任何意外都回错误，服务继续
+                sys.stderr.write(f"[hiring-radar] 处理请求出错：{http.safe(e)}\n")
+                mid = msg.get("id") if isinstance(msg, dict) else None
+                reply = {"jsonrpc": "2.0", "id": mid if isinstance(mid, (str, int)) else None,
+                         "error": {"code": -32603, "message": "服务内部错误"}}
         if reply is not None:
             out.write(json.dumps(reply, ensure_ascii=False) + "\n")
             out.flush()

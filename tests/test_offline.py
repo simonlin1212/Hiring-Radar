@@ -21,7 +21,7 @@ sys.path.insert(0, ROOT)
 
 from radar import ats, boards, cli, directory, http, plugins, process, store, sweep  # noqa: E402
 from radar.boards import freehire, workable  # noqa: E402
-from radar.schema import FIELDS, FIELDS_V1, age_of, days_ago, rec  # noqa: E402
+from radar.schema import FIELDS, FIELDS_V1, age_of, days_ago, older_than, rec  # noqa: E402
 
 NOW = datetime(2026, 10, 12, tzinfo=timezone.utc)
 
@@ -46,7 +46,14 @@ class Schema(unittest.TestCase):
         self.assertEqual(days_ago("2026-10-02T08:00:00Z", NOW), 10)   # 按日计
         self.assertEqual(days_ago(str(int(datetime(2026, 9, 12, tzinfo=timezone.utc).timestamp() * 1000)), NOW), 30)
         self.assertEqual(days_ago("Wed, 01 Jul 2026 10:00:00 +0000", NOW), 102)
-        self.assertEqual(days_ago("Posted 30+ Days Ago", NOW), 30)
+        self.assertEqual(days_ago("Posted 3 Days Ago", NOW), 3)
+        self.assertEqual(days_ago("2026年10月02日", NOW), 10)          # 中文日期（腾讯）
+        self.assertIsNone(days_ago("Posted 30+ Days Ago", NOW))        # 只是下界，说不准，按无日期
+        self.assertEqual(age_of("Posted 30+ Days Ago", NOW), "unknown")
+        self.assertTrue(older_than("Posted 30+ Days Ago", 7, NOW))     # 但能确定早于 7 天前
+        self.assertFalse(older_than("Posted 30+ Days Ago", 183, NOW))  # 说不准是否在半年内：保留
+        self.assertFalse(older_than("", 7, NOW))
+        self.assertTrue(older_than("2026-01-01", 183, NOW))
         self.assertIsNone(days_ago("", NOW))
         self.assertIsNone(days_ago("soon", NOW))
 
@@ -79,6 +86,23 @@ class Process(unittest.TestCase):
         self.assertEqual(au["also"], "workable/search")
         self.assertEqual(au["date"], "2026-10-01")             # 日期从副本补
         self.assertEqual(au["industry"], "Dental")
+
+    def test_dedupe_non_latin(self):
+        """中文、韩文的公司名和职位名不能被当标点清空，否则不同职位会被合成一条。"""
+        a = rec(title="算法工程师", company="腾讯", country="CN", source="local/tencent", id="1")
+        b = rec(title="行政助理", company="百度", country="CN", source="local/baidu", id="2")
+        c = rec(title="算法工程师", company="腾讯", country="CN", source="other/x", id="9")
+        d = rec(title="사무 보조", company="삼성", country="KR", source="x", id="3")
+        self.assertEqual(len(process.dedupe([a, b, c, d])), 3)   # a、c 是同一职位，其余各不相同
+        self.assertEqual(process.norm_title("ＡＩ 工程师"), "ai工程师")   # 全角统一
+
+    def test_dedupe_missing_fields(self):
+        """公司名或职位名为空时不做模糊合并。"""
+        a = rec(title="Receptionist", company="", country="AU", source="s", id="1")
+        b = rec(title="Bookkeeper", company="", country="AU", source="s", id="2")
+        c = rec(title="", company="", country="AU", source="s", id="")
+        d = rec(title="", company="", country="AU", source="s", id="")
+        self.assertEqual(len(process.dedupe([a, b, c, d])), 4)
 
     def test_annotate_keeps_existing(self):
         it = rec(company="Hays", age="0-3m", agency="plugin-said")
@@ -160,6 +184,27 @@ class Mappings(unittest.TestCase):
         self.assertEqual(f, ["Office Admin", "VT-South Burlington-05403", "10-10-26"])
         self.assertEqual((ats.careerplug._loc(f[1]), ats.careerplug._date(f[2])), ("South Burlington, VT", "2026-10-10"))
 
+    def test_icims_sitemap(self):
+        """lastmod 和 loc 之间有换行、带命名空间前缀也要认出日期。"""
+        host = "https://acme.icims.com"
+        xml = ('<?xml version="1.0"?><s:urlset xmlns:s="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+               f'<s:url>\n  <s:loc>{host}/jobs/12/front-desk/job</s:loc>\n  <s:lastmod>2026-10-01</s:lastmod>\n</s:url>'
+               f'<s:url><s:loc>{host}/jobs/13/bookkeeper/job</s:loc></s:url>'
+               '<s:url><s:loc>https://evil.com/jobs/1/x/job</s:loc></s:url></s:urlset>')
+        self.assertEqual(ats.icims._sitemap(xml, host), [(f"{host}/jobs/12/front-desk/job", "12", "2026-10-01"),
+                                                          (f"{host}/jobs/13/bookkeeper/job", "13", "")])
+        with self.assertRaises(ValueError):
+            ats.icims._sitemap("<urlset><url>", host)
+
+    def test_applicantpro_numeric_salary(self):
+        from unittest import mock
+        page = {"data": {"jobs": [{"id": 1, "title": "Admin", "minSalary": 20, "maxSalary": 20, "payTypeFrame": "Hour"},
+                                  {"id": 2, "title": "Clerk", "maxSalary": 45000, "payTypeFrame": "Year"}]}}
+        with mock.patch.object(ats.applicantpro, "get_text", return_value='"domain_id":"77"'), \
+                mock.patch.object(ats.applicantpro, "get_json", return_value=page):
+            items, _ = ats.applicantpro.fetch("acme")
+        self.assertEqual([it["comp"] for it in items], ["20 Hour", "45000 Year"])
+
     def test_pageup_detail(self):
         html = ('<div id="job-content"><h2>Store Manager</h2><div class=\'jobdets\'><p><b>Job no:</b> 1<br>'
                 '<b>Work type:</b> <span class="work-type permanent">Permanent / Full time</span></p>'
@@ -199,6 +244,63 @@ class Security(unittest.TestCase):
         finally:
             os.environ.update({k: v for k, v in old.items() if v})
 
+    def test_body_secret_redacted(self):
+        """对方在报错正文里回显密钥：异常文字、续跑进度和结果里都不能出现。"""
+        http.add_secret("SEKRET-KEY-123")
+        with self.assertRaises(ValueError) as cm:
+            http._json("https://a/x?app_key=SEKRET-KEY-123", "error: bad key " + "x" * 104 + "SEKRET-KEY-123 tail")
+        self.assertNotIn("SEKRET", str(cm.exception))
+        self.assertNotIn("SEKRET", http.safe("Authorization-Key: SEKRET-KEY-123"))
+
+    def test_stderr_guard(self):
+        """调试日志、异常堆栈等直接写 stderr 的文字也要打码。"""
+        http.add_secret("GUARD-SECRET-9")
+        buf, old = io.StringIO(), sys.stderr
+        sys.stderr = buf
+        try:
+            http.guard_stderr()
+            http.DEBUG = True
+            http._log("reason GUARD-SECRET-9")
+            sys.stderr.write("Traceback: ValueError GUARD-SECRET-9\n")
+        finally:
+            http.DEBUG = False
+            sys.stderr = old
+        self.assertNotIn("GUARD-SECRET-9", buf.getvalue())
+        self.assertEqual(buf.getvalue().count("***"), 2)
+
+    def test_workday_jd_stop_and_bad_shape(self):
+        """--jd：详情结构不对只跳过那一条；被限流就停，不再请求后面的岗位；都记成没补完。"""
+        from radar.ats import workday
+        def make():
+            items = [rec(title=f"T{i}", source="workday/x") for i in range(3)]
+            for i, it in enumerate(items):
+                it["_wd"] = ("x.wd1.myworkdayjobs.com", "x", "site", f"/job/{i}")
+            return items
+        calls = []
+
+        def fake(url, **kw):
+            calls.append(url)
+            if url.endswith("/0"):
+                return {"jobPostingInfo": [1]}
+            if url.endswith("/1") and limit[0]:
+                raise http.RateLimited("429")
+            return {"jobPostingInfo": {"jobDescription": "<p>JD</p>", "startDate": "2026-10-01"}}
+        old = workday.get_json
+        workday.get_json = fake
+        try:
+            limit = [True]
+            with redirect_stderr(io.StringIO()):
+                _, err = workday.enrich_jds(make())
+            self.assertEqual(len(calls), 2)   # 第 2 个限流后，第 3 个不再请求
+            self.assertIn("RateLimited", err)
+            limit[0] = False
+            with redirect_stderr(io.StringIO()):
+                items, err = workday.enrich_jds(make())
+            self.assertIn("1 个岗位", err)
+            self.assertEqual([it["jd"] for it in items], ["", "JD", "JD"])
+        finally:
+            workday.get_json = old
+
     def test_meta_hosts(self):
         """名录给的 host/board_id 也要过检查，防止被改写到别的域名（这些检查在发请求之前）。"""
         for meta in ({"host": "evil.com", "instance": "1", "clientkey": "a"},
@@ -224,8 +326,28 @@ class Directory(unittest.TestCase):
         directory._index = None
 
     def tearDown(self):
-        os.remove(directory.PATH)
+        if os.path.exists(directory.PATH):
+            os.remove(directory.PATH)
         directory._index = None
+
+    def test_update_failure_keeps_old(self):
+        from unittest import mock
+        with mock.patch.object(directory, "get_text", side_effect=ValueError("down")), redirect_stderr(io.StringIO()):
+            with self.assertRaises(RuntimeError):
+                directory.update(["greenhouse", "bamboohr"])
+        self.assertEqual(directory.info()["counts"]["greenhouse"], 2)          # 全部失败：原文件不动
+
+        def fake(url, **kw):
+            if "greenhouse" in url:
+                return json.dumps([{"slug": "newco", "status": "live"}])
+            raise http.RateLimited("429")
+        calls = []
+        with mock.patch.object(directory, "get_text", side_effect=lambda u, **kw: calls.append(u) or fake(u)), \
+                redirect_stderr(io.StringIO()):
+            counts, failed = directory.update(["greenhouse", "bamboohr", "workday"])
+        self.assertEqual(failed, ["bamboohr", "workday"])
+        self.assertEqual(len(calls), 2)                                          # 限流后不再请求后面的
+        self.assertEqual((counts["greenhouse"], counts["bamboohr"], counts["workday"]), (1, 1, 1))   # 失败的沿用旧名单
 
     def test_lookup_order(self):
         self.assertEqual([h["ats"] for h in directory.lookup("Acme, Inc.")], ["greenhouse", "workday", "bamboohr"])
@@ -247,6 +369,95 @@ class Store(unittest.TestCase):
         self.assertTrue(all(it["first_seen"] and it["last_seen"] for it in items))
         h = store.history("greenhouse", db)
         self.assertEqual([(r["n"], r["new"], r["gone"]) for r in h], [(2, None, None), (3, 2, 1)])
+
+    def test_only_compare_same_query_and_complete(self):
+        db = os.path.join(TMP, "t2.db")
+        j = lambda i, d="2026-10-01": rec(title=f"T{i}", source="greenhouse/y", id=str(i), date=d)  # noqa: E731
+        store.save([j(1), j(2)], "greenhouse/y", {"keywords": []}, db)
+        s = store.save([j(1)], "greenhouse/y", {"keywords": ["T1"]}, db)        # 换了筛选条件：不比较
+        self.assertIsNone(s["gone"])
+        s = store.save([j(1)], "greenhouse/y", {"keywords": []}, db, complete=False)   # 不完整：不比较
+        self.assertEqual((s["gone"], s["complete"]), (None, False))
+        s = store.save([j(1), j(2), j(3)], "greenhouse/y", {"keywords": []}, db)   # 和第一次（完整、同条件）比
+        self.assertEqual((s["new"], s["gone"]), (1, 0))
+        h = store.history("greenhouse/y", db)
+        self.assertEqual([(r["new"], r["gone"], r["complete"]) for r in h],
+                         [(None, None, True), (None, None, True), (None, None, False), (1, 0, True)])
+
+    def test_aged_out_not_gone(self):
+        db = os.path.join(TMP, "t3.db")
+        q = {"recent_days": 30}
+        store.save([rec(title="Old", source="s", id="1", date="2020-01-01"), rec(title="New", source="s", id="2",
+                                                                                 date="2099-01-01")], "s", q, db)
+        s = store.save([rec(title="New", source="s", id="2", date="2099-01-01")], "s", q, db)
+        self.assertEqual(s["gone"], 0)   # 那条是超出近 30 天窗口，不算下架
+
+
+    def test_history_not_rewritten(self):
+        """历史里的「下架」是存档时算好的：之后别的查询改写同一职位的日期，也不会改变。"""
+        db = os.path.join(TMP, "t4.db")
+        q = {"recent_days": 30}
+        today = datetime.now().strftime("%Y-%m-%d")
+        store.save([rec(title="A", source="s4", id="1", date=today), rec(title="B", source="s4", id="2", date=today)],
+                   "s4", q, db)
+        s = store.save([rec(title="A", source="s4", id="1", date=today)], "s4", q, db)
+        self.assertEqual(s["gone"], 1)
+        store.save([rec(title="B", source="s4", id="2", date="2020-01-01")], "other", {}, db)
+        self.assertEqual(store.history("s4", db)[-1]["gone"], 1)
+
+    def test_old_db_migrates_concurrently(self):
+        """旧库缺列：几个进程同时打开迁移，不会重复加列报错。"""
+        import sqlite3
+        db = os.path.join(TMP, "old.db")
+        con = sqlite3.connect(db)
+        con.executescript("CREATE TABLE runs(id INTEGER PRIMARY KEY, at TEXT, scope TEXT, query TEXT, n INTEGER);"
+                          "CREATE TABLE seen(run INTEGER, key TEXT, PRIMARY KEY(run, key));")
+        con.close()
+        errs = []
+
+        def go():
+            try:
+                store.connect(db).close()
+            except Exception as e:   # noqa: BLE001
+                errs.append(e)
+        ts = [threading.Thread(target=go) for _ in range(4)]
+        for t in ts:
+            t.start()
+        for t in ts:
+            t.join()
+        self.assertEqual(errs, [])
+        self.assertTrue(store.save([rec(title="A", source="o", id="1")], "o", {}, db)["complete"])
+
+
+    def test_workday_site_and_jd_in_query(self):
+        """Workday：换招聘站点、开关 --jd 都算不同条件；--jd 没补完的那次不当比较基线。"""
+        from radar.ats import workday
+        db = os.path.join(TMP, "wd.db")
+
+        def board(host, tenant, site, search="", pages=40):
+            items = [rec(title=f"T{i}", company="X", source=f"workday/{tenant}", id=f"{site}-{i}") for i in range(2)]
+            for it in items:
+                it["_wd"] = (host, tenant, site, f"/job/{it['id']}")
+            return items, f"workday/{tenant}"
+
+        def jd(url, **kw):
+            raise http.RateLimited("429")
+        old = workday.fetch_board, workday.get_json
+        workday.fetch_board, workday.get_json = board, jd
+        try:
+            wd = lambda site, *extra: run_cli("--workday", f"x.wd1.myworkdayjobs.com,x,{site}",  # noqa: E731
+                                             "--save", "--db", db, "--json", *extra)
+            code, out, _ = wd("A")
+            self.assertEqual(code, 0)
+            code, out, _ = wd("B")
+            self.assertIsNone(json.loads(out)["saved"]["new"])          # 换站点：不和站点 A 比
+            code, out, _ = wd("A", "--jd")
+            o = json.loads(out)
+            self.assertEqual((code, o["incomplete"], o["saved"]["complete"]), (3, True, False))
+            code, out, _ = wd("A")
+            self.assertEqual(json.loads(out)["saved"]["gone"], 0)       # 和第一次（同站点、无 --jd）比
+        finally:
+            workday.fetch_board, workday.get_json = old
 
 
 class FakeBoard:
@@ -311,6 +522,78 @@ class Sweep(unittest.TestCase):
         items, rep = sweep.run(["fake_a"], boards.Query(max_items=3))
         self.assertEqual((len(items), rep["fake_a"]["capped"]), (3, True))
 
+    def test_resume_drops_half_line(self):
+        """进度记了字节数：尾部写到一半的残行丢掉，不会让续跑整体失败。"""
+        q = boards.Query(keywords=["x-half-line"])
+        self.a.FILTERS = {"keyword"}
+        stp, spool = sweep._paths(["fake_a"], q)
+        os.makedirs(sweep.DIR, exist_ok=True)
+        good = "".join(json.dumps(rec(title=f"old {i}", id=f"o{i}", source="fake_a")) + "\n" for i in range(2))
+        with open(spool, "w") as f:
+            f.write(good + '{"title": "half')
+        with open(stp, "w") as f:
+            json.dump({"cursor": {"fake_a": {"p": 1}}, "done": {}, "report": {"fake_a": {"n": 2, "capped": False}},
+                       "lines": 2, "bytes": len(good.encode())}, f)
+        with redirect_stderr(io.StringIO()):
+            items, rep = sweep.run(["fake_a"], q, resume=True)
+        self.assertEqual([it["id"] for it in items], ["o0", "o1", "1-0", "1-1"])
+
+    def test_resume_refuses_short_spool(self):
+        """结果文件比进度记的短（续跑时又被打断等）：旧游标对不上，从头重拉，不悄悄漏职位。"""
+        q = boards.Query(keywords=["x-short"])
+        self.a.FILTERS = {"keyword"}
+        stp, spool = sweep._paths(["fake_a"], q)
+        os.makedirs(sweep.DIR, exist_ok=True)
+        lines = [json.dumps(rec(title=f"old {i}", id=f"0-{i}", source="fake_a")) + "\n" for i in range(2)]
+        with open(spool, "w") as f:
+            f.write(lines[0])   # 第 2 条丢了
+        with open(stp, "w") as f:
+            json.dump({"cursor": {"fake_a": {"p": 1}}, "done": {}, "report": {"fake_a": {"n": 2, "capped": False}},
+                       "lines": 2, "bytes": len("".join(lines).encode())}, f)
+        err = io.StringIO()
+        with redirect_stderr(err):
+            items, rep = sweep.run(["fake_a"], q, resume=True)
+        self.assertEqual([it["id"] for it in items], ["0-0", "0-1", "1-0", "1-1"])
+        self.assertEqual(rep["fake_a"]["n"], 4)
+        self.assertIn("对不上", err.getvalue())
+
+    def test_same_job_counted_once(self):
+        """同一来源里同一个职位（多个关键词都命中、续跑重拉的页）只算一次，也不占 --max 名额。"""
+        class Twice:
+            NAME, DESC, FILTERS = "twice", "t", {"keyword"}
+
+            def pages(self, q, state=None):
+                for kw in q.keywords:
+                    yield [rec(title="Receptionist", id="1", source="twice/x"),
+                           rec(title=f"{kw} job", id=kw, source="twice/x")], {"k": kw}
+        boards.BOARDS["twice"] = Twice()
+        try:
+            items, rep = sweep.run(["twice"], boards.Query(keywords=["a", "b"], max_items=3))
+        finally:
+            boards.BOARDS.pop("twice")
+        self.assertEqual([it["id"] for it in items], ["1", "a", "b"])
+        self.assertEqual((rep["twice"]["n"], rep["twice"]["capped"]), (3, True))
+
+    def test_upstream_truncation_is_incomplete(self):
+        class Capped:
+            NAME, DESC, FILTERS = "capped", "c", set()
+
+            def pages(self, q, state=None):
+                q.truncate("上游只给前 1 条")
+                yield [rec(title="A", id="1", source="capped")], None
+        boards.BOARDS["capped"] = Capped()
+        try:
+            with redirect_stderr(io.StringIO()):
+                items, rep = sweep.run(["capped"], boards.Query())
+                code, out, err = run_cli("--board", "capped", "--json")
+        finally:
+            boards.BOARDS.pop("capped")
+        self.assertEqual(rep["capped"]["truncated"], ["上游只给前 1 条"])
+        self.assertTrue(sweep.incomplete(rep))
+        self.assertEqual(os.listdir(sweep.DIR), [])     # 续跑补不回来，不留进度
+        self.assertEqual(code, 3)
+        self.assertTrue(json.loads(out)["incomplete"])
+
 
 class Plugins(unittest.TestCase):
     def test_load_and_cli(self):
@@ -324,6 +607,8 @@ class Plugins(unittest.TestCase):
                     "                date='2025-01-01', source='plugin/mysite')], None\n")
         with open(os.path.join(d, "_skip.py"), "w") as f:
             f.write("raise SystemExit('must not load')\n")
+        with open(os.path.join(d, "noisy.py"), "w") as f:
+            f.write("print('plugin loaded')\nNAME='noisy'\ndef pages(q, state=None):\n    yield [], None\n")
         try:
             code, out, err = run_cli("--plugins", d, "--board", "mysite", "--country", "AU", "--recent-days", "0",
                                      "--no-agency", "--json")
@@ -337,8 +622,10 @@ class Plugins(unittest.TestCase):
             env = json.loads(out)
             self.assertEqual(env["total"], 1)     # 默认近半年：2025-01-01 那条被滤掉
             self.assertEqual(env["ages"]["0-3m"], 1)
+            self.assertNotIn("plugin loaded", out)   # 插件导入时的打印不能混进 JSON
         finally:
             boards.BOARDS.pop("mysite", None)
+            boards.BOARDS.pop("noisy", None)
 
 
 class Http(unittest.TestCase):
@@ -365,6 +652,26 @@ class Http(unittest.TestCase):
                     return
                 if self.path == "/forbidden":
                     self.send_response(403)
+                    self.end_headers()
+                    return
+                if self.path == "/challenge503":
+                    self.send_response(503)
+                    self.end_headers()
+                    self.wfile.write(b"<html><title>Just a moment...</title></html>")
+                    return
+                if self.path == "/late503":   # 前 3 次让马上重试，第 4 次要求等 600 秒
+                    self.send_response(503)
+                    self.send_header("Retry-After", "0" if hits[self.path] < 4 else "600")
+                    self.end_headers()
+                    return
+                if self.path == "/always503":
+                    self.send_response(503)
+                    self.send_header("Retry-After", "0")
+                    self.end_headers()
+                    return
+                if self.path == "/longwait":
+                    self.send_response(429)
+                    self.send_header("Retry-After", "600")
                     self.end_headers()
                     return
                 if self.path == "/challenge":
@@ -401,6 +708,30 @@ class Http(unittest.TestCase):
         self.assertEqual(self.hits["/forbidden"], 1)   # 403 不重试
         with self.assertRaises(http.Blocked):
             http.get_text(self.base + "/challenge")
+        with self.assertRaises(http.Blocked):
+            http.get_text(self.base + "/challenge503")
+        self.assertEqual(self.hits["/challenge503"], 1)   # 503 + 人机验证页：认作被拦，不重试
+
+    def test_long_retry_after_not_shortened(self):
+        with self.assertRaises(http.RateLimited) as cm:
+            http.get_json(self.base + "/longwait")
+        self.assertIn("600", str(cm.exception))
+        self.assertEqual(self.hits["/longwait"], 1)       # 不把 600 秒缩成 5 秒再试
+
+    def test_5xx_exhausted_stops(self):
+        """5xx 重试用完、或最后一次要求长等待：都抛 RateLimited，调用方据此停下。"""
+        with redirect_stderr(io.StringIO()), self.assertRaises(http.RateLimited) as cm:
+            http.get_json(self.base + "/late503")
+        self.assertIn("600", str(cm.exception))
+        self.assertEqual(self.hits["/late503"], 4)
+        with redirect_stderr(io.StringIO()), self.assertRaises(http.RateLimited):
+            http.get_json(self.base + "/always503", tries=2)
+
+    def test_retry_after_date(self):
+        from email.utils import format_datetime
+        from datetime import timedelta
+        e = type("E", (), {"headers": {"Retry-After": format_datetime(datetime.now(timezone.utc) + timedelta(seconds=90))}})
+        self.assertTrue(85 <= http._retry_after(e, 0) <= 92)
 
 
 class Mcp(unittest.TestCase):
@@ -432,6 +763,18 @@ class Mcp(unittest.TestCase):
         self.assertEqual(r[3]["error"]["code"], -32602)
         self.assertTrue(r[4]["result"]["isError"])          # 非法 slug 被拦下，不发请求
         self.assertEqual(r[5]["error"]["code"], -32700)
+
+    def test_bad_shapes_keep_serving(self):
+        r = self.talk({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": [1, 2]},
+                      {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": "list_sources"},
+                      {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "list_sources", "arguments": "x"}},
+                      {"jsonrpc": "2.0", "id": 4, "method": "tools/call",
+                       "params": {"name": "company_jobs", "arguments": {"company": "x", "limit": "many"}}},
+                      {"jsonrpc": "2.0", "id": 5, "method": "ping"})
+        self.assertEqual([m.get("id") for m in r], [1, 2, 3, 4, 5])
+        self.assertEqual([r[i]["error"]["code"] for i in range(3)], [-32602] * 3)
+        self.assertTrue(r[3]["result"]["isError"])
+        self.assertEqual(r[4]["result"], {})
 
     def test_slim(self):
         from radar import mcp

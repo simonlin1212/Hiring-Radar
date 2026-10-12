@@ -10,13 +10,10 @@
   例:  python3 beisen.py dreame 追觅 产品
 """
 import os
-import sys, json, re, ssl, urllib.request
+import sys, json, re
 
-CTX = ssl.create_default_context()
-if os.environ.get("HIRING_RADAR_INSECURE") == "1":  # 默认验证 TLS 证书；仅拦截式代理(证书被替换)时设此环境变量关闭
-    CTX.check_hostname = False
-    CTX.verify_mode = ssl.CERT_NONE
-UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # 仓库根目录
+from radar.http import Blocked, RateLimited, post_json  # noqa: E402  统一联网：如实报身份、限速、429 退避、被拦就停
 
 
 def _call(slug, keyword, page, size):
@@ -24,11 +21,8 @@ def _call(slug, keyword, page, size):
     body = {"PageIndex": page, "PageSize": size, "LocId": [], "Category": ["1"],
             "KeyWords": keyword or "", "SpecialType": 0, "PortalId": "",
             "DisplayFields": ["Category", "Kind", "LocId", "PostDate", "Salary"]}
-    headers = {"User-Agent": UA, "Content-Type": "application/json", "Accept": "application/json",
-               "Origin": f"https://{slug}.zhiye.com", "Referer": f"https://{slug}.zhiye.com/social/jobs"}
-    req = urllib.request.Request(f"https://{slug}.zhiye.com/api/Jobad/GetJobAdPageList",
-                                 data=json.dumps(body).encode(), headers=headers)
-    return json.load(urllib.request.urlopen(req, timeout=25, context=CTX))
+    headers = {"Origin": f"https://{slug}.zhiye.com", "Referer": f"https://{slug}.zhiye.com/social/jobs"}
+    return post_json(f"https://{slug}.zhiye.com/api/Jobad/GetJobAdPageList", body, headers=headers)
 
 
 def fetch(slug, company, keyword="", pages=8, limit=50):
@@ -38,6 +32,8 @@ def fetch(slug, company, keyword="", pages=8, limit=50):
     for pg in range(pages):
         try:
             d = _call(slug, keyword, pg, limit)
+        except (Blocked, RateLimited):
+            raise                              # 被拦/限流：停下报告，不当成「没有更多」
         except Exception:
             break                              # 单页失败：保留已抓到的，优雅退出
         posts = d.get("Data") or []

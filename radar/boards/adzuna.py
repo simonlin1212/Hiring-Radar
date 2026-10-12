@@ -3,7 +3,6 @@ developer.adzuna.com 注册后设置环境变量 ADZUNA_APP_ID、ADZUNA_APP_KEY�
 薪资（可能是 Adzuna 估算的）、类别、发布日期、JD 摘要。
 
 注意：本模块按官方文档的字段编写，维护者没有 key，未经实网测试。"""
-import sys
 
 from ..http import get_json
 from ..schema import rec
@@ -57,7 +56,7 @@ def pages(q, state=None):
             total = d.get("count") or 0
             last = len(rows) < PAGE or page * PAGE >= total or page >= MAX_PAGES
             if last and page >= MAX_PAGES and total > page * PAGE:
-                sys.stderr.write(f"[!] Adzuna {cc}「{kw}」共 {total} 条，只拉前 {page * PAGE} 条\n")
+                q.truncate(f"Adzuna {cc}「{kw}」共 {total} 条，只拉前 {page * PAGE} 条")
             page += 1
             yield [to_rec(j, cc) for j in rows], ({"i": ci + 1} if last else {"i": ci, "page": page})
             if last:

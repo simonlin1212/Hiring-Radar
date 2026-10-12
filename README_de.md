@@ -30,7 +30,7 @@ Drei Einsatzarten:
 
 **Große globale Namen funktionieren mit nur einem Firmennamen**, z. B. NVIDIA · OpenAI · Anthropic · Stripe · Databricks · Coinbase · Reddit · Discord · Cloudflare · Notion · Scale AI · Figure · Perplexity · 1X · Cohere · GitLab und mehr.
 
-**Neu in v2**: 24 ATS plus ein Verzeichnis von ca. 90.000 Unternehmen (per Name nachschlagen, welches System eine Firma nutzt) · 12 unternehmensübergreifende Quellen (u. a. der Aggregator freehire sowie die staatlichen Jobbörsen Schwedens, Singapurs und Deutschlands) · quellenübergreifende Deduplizierung und Markierung von Personalvermittlern · Altersklassen nach Veröffentlichungsdatum · fortsetzbare Läufe · lokale Schnappschüsse für neue/entfernte Stellen · ein **MCP-Server**, den Ihr KI-Assistent direkt aufrufen kann.
+**Neu in v2**: 24 ATS plus ein Verzeichnis von ca. 90.000 Unternehmen (per Name nachschlagen, welches System eine Firma nutzt) · 12 unternehmensübergreifende Quellen (u. a. der Aggregator freehire sowie die staatlichen Jobbörsen Schwedens, Singapurs und Deutschlands) · quellenübergreifende Deduplizierung und Markierung von Personalvermittlern · Altersklassen nach Veröffentlichungsdatum · fortsetzbare Läufe · lokale Schnappschüsse für neue/entfernte Stellen · ein **MCP-Server**, den Ihr KI-Assistent direkt aufrufen kann. Alle Änderungen in [CHANGELOG.md](CHANGELOG.md).
 
 > ⚠️ Es liest nur **Stellenanzeigen, die Unternehmen selbst veröffentlichen** – keine Lebensläufe oder personenbezogenen Daten, keine Inhalte hinter einem Login, und es stoppt bei jeder Bot-Prüfung. Siehe „Verantwortungsvolle Nutzung“ unten.
 
@@ -69,11 +69,11 @@ python3 hiring_radar.py --workday host,tenant,site
 # 2) Unternehmensübergreifend: Land + Stichwort + Zeitraum
 python3 hiring_radar.py --board freehire --country AU,NZ --keyword receptionist,bookkeeper
 python3 hiring_radar.py --board freehire,workable --country AU --max 0 --json > au.json   # ohne Obergrenze
-python3 hiring_radar.py --board arbeitsagentur --keyword Buchhalter                        # Bundesagentur für Arbeit
+python3 hiring_radar.py --board jobtech --keyword ekonomiassistent --recent-days 30       # schwedische öffentliche Stellenbörse
 python3 hiring_radar.py --board all --keyword "AI engineer"                              # die 4 Remote-Boards
 
 # 3) Nach Abbruch fortsetzen / Schnappschüsse
-python3 hiring_radar.py --board freehire --country AU --max 0 --resume
+python3 hiring_radar.py --board freehire,workable --country AU --max 0 --json --resume > au.json   # nach Abbruch: exakt dieselben Optionen wie oben, plus --resume
 python3 hiring_radar.py anthropic --save          # der nächste Lauf zeigt neue/entfernte Stellen
 python3 hiring_radar.py --history
 
@@ -85,9 +85,11 @@ python3 hiring_radar.py --local tencent --keyword 算法       # Tencent (Eigenp
 
 **Häufige Optionen**: `--keyword a,b` (beliebiger Treffer) · `--recent-days N` (0 = unbegrenzt) · `--country AU,NZ` · `--max N` (Obergrenze je Quelle, Standard 1000, 0 = keine) · `--no-agency` · `--json` · `--limit N` · `--debug`
 
+**Umstieg von v1**: `--board` zeigt jetzt standardmäßig nur die letzten 183 Tage, höchstens 1.000 Stellen je Quelle, und entfernt Dubletten über Quellen hinweg; für Ergebnisse wie in v1 `--recent-days 0 --max 0 --no-dedupe` anhängen.
+
 **Umgebungsvariablen**: `HIRING_RADAR_HOME` (Verzeichnis, Schnappschüsse, Fortsetzungsstand; Standard `~/.hiring-radar`) · `HIRING_RADAR_DELAY` (Mindestabstand in Sekunden zwischen zwei Anfragen an dieselbe Website; Standard 0,3) · `HIRING_RADAR_PLUGINS` (privater Plugin-Ordner) · `HIRING_RADAR_INSECURE=1` (Zertifikatsprüfung aus, nur hinter einem abfangenden Proxy)
 
-Exit-Codes: `0` OK; `3` manche Quellen wurden nicht fertig (Abgerufenes wird trotzdem ausgegeben; `--resume` nutzen).
+Exit-Codes: `0` OK; `1` Fehler; `3` unvollständig – eine Quelle wurde wegen eines Fehlers gestoppt (Abgerufenes wird trotzdem ausgegeben; denselben Befehl mit `--resume` wiederholen), eine Blätter-Obergrenze der Quelle lieferte nur einen Teil (Fortsetzen hilft nicht; Abfrage eingrenzen) oder `--directory-update` konnte einige Systeme nicht laden (die alten Listen bleiben erhalten).
 
 ## Für KI-Assistenten (MCP)
 
@@ -163,6 +165,31 @@ python3 hiring_radar.py --plugins ~/my-plugins --board myboard --country AU
 
 Jede `.py`-Datei im Plugin-Ordner, die nicht mit `_` beginnt, ist eine Quelle mit `NAME`, `DESC`, `FILTERS` und `pages(q, state=None)` (gleiche Schnittstelle wie `radar/boards/`); Dateien mit `_` am Anfang können gemeinsamen Code enthalten. Plugins laufen mit Ihren Rechten; für die Bedingungen der besuchten Websites sind Sie selbst verantwortlich.
 
+## Verwandte Projekte: wo es die großen Plattformen gibt
+
+Hiring Radar enthält keine Scraper für große Plattformen wie Indeed, LinkedIn oder SEEK. Die zwei folgenden Open-Source-Repositories von Dritten schon; die Tabelle zeigt je Plattform, wo der Code ungefähr liegt, damit Sie selbst nachsehen können.
+
+- **[speedyapply/JobSpy](https://github.com/speedyapply/JobSpy)**: Python-Bibliothek, MIT-Lizenz. Fragt mehrere Plattformen auf einmal ab und liefert Titel, Firma, Ort, Gehalt, Link und Beschreibung.
+- **[strelov1/freehire](https://github.com/strelov1/freehire)**: In Go geschriebene Stellensuchmaschine, MIT-Lizenz, 225 Quellen. Ihr Code in der Tabelle ist Teil ihres Backend-Crawlers, keine eigenständige Bibliothek; `--board freehire` in diesem Repo liest ihre öffentliche API.
+
+| Plattform | Abdeckung | Repository | Ungefähre Stelle |
+|---|---|---|---|
+| Indeed | ca. 60 Länder, u. a. USA, UK, CA, AU, NZ, IE | JobSpy | `jobspy/indeed/` |
+| LinkedIn | weltweit | JobSpy | `jobspy/linkedin/` |
+| Glassdoor | ca. 20 Länder | JobSpy | `jobspy/glassdoor/` |
+| ZipRecruiter | USA, Kanada | JobSpy | `jobspy/ziprecruiter/` |
+| Google Jobs | Ort im Suchbegriff angeben | JobSpy | `jobspy/google/` |
+| Naukri | Indien | JobSpy | `jobspy/naukri/` |
+| Bayt | Naher Osten & Golf | JobSpy | `jobspy/bayt/` |
+| BDJobs | Bangladesch | JobSpy | `jobspy/bdjobs/` |
+| HelloWork | Frankreich | JobSpy | `jobspy/hellowork/` |
+| SEEK | Australien, Neuseeland | freehire | `internal/ingest/sources/seek.go` |
+| JobStreet / JobsDB | SG, MY, ID, PH / HK, TH | freehire | ebenfalls `seek.go` (gleiches Protokoll) |
+| Öffentliche LinkedIn-Stellenliste | weltweit; nur zum Finden von Firmen, die einstellen | freehire | `cmd/harvest-linkedin/` |
+| WhatJobs | viele Länder; braucht ein WhatJobs-Publisher-Konto | freehire | `internal/ingest/sources/whatjobs.go` |
+
+> Das sind Projekte Dritter, nicht Teil von Hiring Radar. Wir haben ihren Code nicht geprüft und liefern keinen Code, um sie an dieses Tool anzubinden. Eine Open-Source-Lizenz regelt die Nutzung des Codes, nicht ob eine Plattform Scraping erlaubt: Prüfen Sie vorher Nutzungsbedingungen und robots.txt der Zielseite. Stand 2026-10-12; die Repositories können sich ändern.
+
 ## Unternehmen hinzufügen = eine Zeile (China)
 
 Die chinesische Firmenliste ist `parsers/companies.seed` (`|`-getrennt); eine Firma = eine Zeile:
@@ -185,7 +212,7 @@ Stellenanzeigen sind ein **Frühindikator**: wo eine Firma expandiert, in welche
 
 ```
 Hiring-Radar/
-├── hiring_radar.py     # Kommandozeilen-Einstieg (v1-Nutzung unverändert)
+├── hiring_radar.py     # Kommandozeilen-Einstieg (v1-Befehlssyntax unverändert)
 ├── radar/              # Kernpaket
 │   ├── http.py         # Netz: ehrliche Kennung, Takt, Rückzug, Stopp bei Sperre
 │   ├── schema.py       # einheitliche Felder, Datum, Altersklassen
@@ -215,7 +242,7 @@ Ein **persönliches / Forschungs-, lokales + Open-Source**-Werkzeug. Bitte veran
 
 - **Nur Stellenanzeigen lesen – nie Lebensläufe / personenbezogene Daten** (personenbezogene Daten fallen unter Chinas PIPL – nicht tun).
 - **Nur öffentliche Schnittstellen ohne Login**: Login-Sperre / Captcha / aktiver Bot-Schutz wird **nicht umgangen**; 403 oder eine Bot-Prüfseite beendet den Lauf; keine Proxy-Pools, keine gefälschten Browser-Fingerabdrücke.
-- **Ehrliche Kennung, niedrige Frequenz**: Der User-Agent nennt HiringRadar und die Projekt-URL; standardmäßig 0,3 Sekunden zwischen zwei Anfragen an dieselbe Website; bei 429 wird wie verlangt gewartet, und wenn es weiter scheitert, stoppt der Lauf und wartet auf Ihr `--resume`. robots.txt wird vor dem Aufnehmen einer neuen Quelle geprüft (deshalb kein Paycom).
+- **Ehrliche Kennung, niedrige Frequenz**: Der User-Agent nennt HiringRadar und die Projekt-URL (einzige Ausnahme: Die APIs von Feishu Hire und ByteDance lehnen eine Programmkennung ab, daher behalten diese beiden Parser den Browser-User-Agent aus v1); standardmäßig 0,3 Sekunden zwischen zwei Anfragen an dieselbe Website; bei 429 wird wie verlangt gewartet, und wenn es weiter scheitert, stoppt der Lauf und wartet auf Ihr `--resume`. robots.txt wird vor dem Aufnehmen einer neuen Quelle geprüft (deshalb kein Paycom).
 - **Schlüssel nur in Umgebungsvariablen**: Quellen mit Schlüssel lesen ihn aus der Umgebung; in Fehlermeldungen werden Schlüssel maskiert.
 - **Nur lokal**: kein Hosting / Upload / Server; Daten landen nur auf Ihrem Rechner. Bei Weiterveröffentlichung Compliance selbst prüfen; kein kommerzieller Weiterverkauf. Das Firmenverzeichnis steht unter CC BY-SA 4.0 – Weitergabe nur mit Namensnennung und gleicher Lizenz (siehe [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
 - „Öffentlich sichtbar“ ≠ „frei aggregier- und weiterveröffentlichbar“ – massenhaftes Scrapen + Weiterveröffentlichen kann in vielen Rechtsordnungen unlauterer Wettbewerb sein (inkl. chinesischer Rechtsprechung).

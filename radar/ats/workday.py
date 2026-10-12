@@ -5,8 +5,8 @@ import re
 import sys
 import urllib.error
 
-from ..http import get_json, get_text, post_json
-from ..schema import rec, strip_html
+from ..http import Blocked, RateLimited, get_json, get_text, post_json
+from ..schema import age_of, rec, strip_html
 
 HOST = re.compile(r"[a-z0-9-]{1,64}\.wd\d{1,3}(?:-[a-z0-9]+)?\.myworkdayjobs\.com")
 SITE = re.compile(r"[A-Za-z0-9_-]{1,64}")
@@ -75,6 +75,8 @@ def discover_site(host):
         return _sites[host]
     try:
         txt = get_text(f"https://{host}/robots.txt", tries=2)
+    except (Blocked, RateLimited):
+        raise
     except Exception:
         txt = ""
     allow, sitemap = [], []
@@ -116,8 +118,10 @@ def fetch(slug, meta=None):
 
 
 def enrich_jds(items):
-    """对 Workday 岗位逐个抓 JD（/job/{path}）。慢：每岗一次 HTTP。"""
-    done = 0
+    """对 Workday 岗位逐个抓 JD（/job/{path}）。慢：每岗一次 HTTP。
+    返回 (items, 未补完原因)：被限流或被拦就停下，不再请求后面的岗位；个别岗位读取失败也记下。
+    原因为空表示全部补完。"""
+    done, failed, err = 0, 0, ""
     for it in items:
         meta = it.get("_wd")
         if not meta:
@@ -125,12 +129,23 @@ def enrich_jds(items):
         host, tenant, site, path = meta
         try:
             d = get_json(f"https://{host}/wday/cxs/{tenant}/{site}{path}")
-            info = (d.get("jobPostingInfo") or {})
-            it["jd"] = strip_html(info.get("jobDescription", ""))
-            it["location"] = info.get("location", "") or it["location"]
-            it["date"] = info.get("startDate", "") or it["date"]
-            done += 1
+        except (Blocked, RateLimited) as e:
+            err = f"{type(e).__name__}: {e}"
+            sys.stderr.write(f"[!] --jd 停止：{err}\n")
+            break
         except Exception:
+            failed += 1
             continue
+        info = d.get("jobPostingInfo") if isinstance(d, dict) else None
+        if not isinstance(info, dict):   # 结构不对：跳过这一条，不让整个查询崩掉
+            failed += 1
+            continue
+        it["jd"] = strip_html(str(info.get("jobDescription") or ""))
+        it["location"] = str(info.get("location") or "") or it["location"]
+        it["date"] = str(info.get("startDate") or "") or it["date"]
+        it["age"] = age_of(it["date"])   # 真实日期替换了列表里的相对日期，重新分档
+        done += 1
+    if failed and not err:
+        err = f"{failed} 个岗位的详情读取失败"
     sys.stderr.write(f"[i] --jd: Workday 逐岗 JD 抓到 {done}/{len(items)}\n")
-    return items
+    return items, err

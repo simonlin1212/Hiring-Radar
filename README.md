@@ -26,6 +26,7 @@
   <a href="#给-ai-用mcp">MCP</a> ·
   <a href="#输出字段">输出字段</a> ·
   <a href="#覆盖来源">覆盖来源</a> ·
+  <a href="#相关项目大平台去哪找">相关项目</a> ·
   <a href="#使用边界--合规">使用边界</a>
 </p>
 
@@ -43,7 +44,7 @@
 
 **全球大牌只需一个公司名即可查到**，例如 NVIDIA · OpenAI · Anthropic · Stripe · Databricks · Coinbase · Reddit · Discord · Cloudflare · Notion · Scale AI · Figure · Perplexity · 1X · Cohere · GitLab 等等。
 
-**v2 新增**：24 个招聘系统 + 约 9 万家公司的名录（按公司名直接查到用哪个系统）· 12 个跨公司来源（含 freehire 聚合、瑞典/新加坡/德国政府职位库）· 多来源去重和疑似中介标记 · 按发布时间分档 · 中断可续跑 · 本地存档看新增/下架 · **MCP 服务**，AI 助手可直接调用。
+**v2 新增**：24 个招聘系统 + 约 9 万家公司的名录（按公司名直接查到用哪个系统）· 12 个跨公司来源（含 freehire 聚合、瑞典/新加坡/德国政府职位库）· 多来源去重和疑似中介标记 · 按发布时间分档 · 中断可续跑 · 本地存档看新增/下架 · **MCP 服务**，AI 助手可直接调用。 完整变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 > ⚠️ 只读**企业主动公开的岗位信息**，不抓个人简历、不碰需要登录的内容，遇到人机验证就停。详见 [使用边界 / 合规](#使用边界--合规)。
 
@@ -86,7 +87,7 @@ python3 hiring_radar.py --board jobtech --keyword ekonomiassistent --recent-days
 python3 hiring_radar.py --board all --keyword "AI engineer"                              # 4 个远程板
 
 # 3) 中断后续跑 / 存档看变化
-python3 hiring_radar.py --board freehire --country AU --max 0 --resume
+python3 hiring_radar.py --board freehire,workable --country AU --max 0 --json --resume > au.json   # 中断后：参数和上面那条完全一样，只加 --resume
 python3 hiring_radar.py anthropic --save          # 下次再跑会显示新增/下架
 python3 hiring_radar.py --history
 
@@ -98,9 +99,11 @@ python3 hiring_radar.py --local tencent --keyword 算法       # 腾讯(自建)
 
 **常用参数**：`--keyword a,b`（任一命中）· `--recent-days N`（0=不限）· `--country AU,NZ` · `--max N`（每个来源上限，默认 1000，0=不限）· `--no-agency` · `--json` · `--limit N` · `--debug`
 
+**从 v1 升级**：`--board` 现在默认只看近 183 天、每个来源最多 1000 条，多个来源自动去重；要和 v1 一样的结果，加 `--recent-days 0 --max 0 --no-dedupe`。
+
 **环境变量**：`HIRING_RADAR_HOME`（名录/存档/续跑进度目录，默认 `~/.hiring-radar`）· `HIRING_RADAR_DELAY`（同一网站两次请求最小间隔秒数，默认 0.3）· `HIRING_RADAR_PLUGINS`（私有插件目录）· `HIRING_RADAR_INSECURE=1`（仅拦截式代理下关闭证书校验）
 
-退出码：`0` 正常；`3` 有来源没拉完（已拉到的照常输出，可 `--resume`）。
+退出码：`0` 正常；`1` 出错；`3` 结果不全——有来源出错停下（已拉到的照常输出，同样的命令加 `--resume` 补完），或上游翻页有上限只给了一部分（续跑补不回来，请缩小查询），或 `--directory-update` 有系统没下载成功（保留旧名单）。
 
 ## 给 AI 用（MCP）
 
@@ -176,6 +179,31 @@ python3 hiring_radar.py --plugins ~/my-plugins --board myboard --country AU
 
 插件目录里每个不以 `_` 开头的 `.py` 是一个来源，定义 `NAME`、`DESC`、`FILTERS` 和 `pages(q, state=None)`（接口同 `radar/boards/`）；以 `_` 开头的文件可放共用代码。插件以你的权限运行，访问网站的条款由你自行遵守。
 
+## 相关项目：大平台去哪找
+
+Hiring Radar 不带 Indeed、LinkedIn、SEEK 这类大平台的抓取代码。下面两个第三方开源仓库有，表里按平台列出代码大致在哪，方便你自己去看。
+
+- **[speedyapply/JobSpy](https://github.com/speedyapply/JobSpy)**：Python 库，MIT 许可证。一次查多个平台，返回职位名、公司、地点、薪资、链接和 JD。
+- **[strelov1/freehire](https://github.com/strelov1/freehire)**：Go 写的职位搜索引擎，MIT 许可证，225 个来源。下表里它的代码是后台采集的一部分，不是单独的库；本仓库 `--board freehire` 读的就是它的公开接口。
+
+| 平台 | 覆盖 | 仓库 | 代码大致位置 |
+|---|---|---|---|
+| Indeed | 约 60 个国家，含美英加澳新爱 | JobSpy | `jobspy/indeed/` |
+| LinkedIn | 全球 | JobSpy | `jobspy/linkedin/` |
+| Glassdoor | 约 20 个国家 | JobSpy | `jobspy/glassdoor/` |
+| ZipRecruiter | 美国、加拿大 | JobSpy | `jobspy/ziprecruiter/` |
+| Google 职位搜索 | 地点写在搜索词里 | JobSpy | `jobspy/google/` |
+| Naukri | 印度 | JobSpy | `jobspy/naukri/` |
+| Bayt | 中东、海湾 | JobSpy | `jobspy/bayt/` |
+| BDJobs | 孟加拉 | JobSpy | `jobspy/bdjobs/` |
+| HelloWork | 法国 | JobSpy | `jobspy/hellowork/` |
+| SEEK | 澳洲、新西兰 | freehire | `internal/ingest/sources/seek.go` |
+| JobStreet / JobsDB | 新加坡、马来西亚、印尼、菲律宾 / 香港、泰国 | freehire | 同上 `seek.go`（同一套接口） |
+| LinkedIn 公开职位列表 | 全球；它只用来找在招的公司 | freehire | `cmd/harvest-linkedin/` |
+| WhatJobs | 多国；需要 WhatJobs 发布方账号 | freehire | `internal/ingest/sources/whatjobs.go` |
+
+> 这些是第三方项目，不属于 Hiring Radar。我们没有审查过它们的代码，也不提供把它们接进本工具的代码。开源许可证只说明代码怎么用，不代表平台允许抓取：用之前请先看目标网站的使用条款和 robots.txt。以上 2026-10-12 核对，仓库结构以后可能变。
+
 ## 加公司 = 加一行（中国）
 
 中国公司清单在 `parsers/companies.seed`（`|` 分隔），新增一家只加一行：
@@ -198,7 +226,7 @@ key | beisen | 公司名 | slug
 
 ```
 Hiring-Radar/
-├── hiring_radar.py     # 命令行入口（v1 用法不变）
+├── hiring_radar.py     # 命令行入口（v1 命令写法不变）
 ├── radar/              # 核心包
 │   ├── http.py         # 联网：如实报身份、限速、退避、被拦就停
 │   ├── schema.py       # 统一字段、日期、时间分档
@@ -228,7 +256,7 @@ Hiring-Radar/
 
 - **只读「岗位信息」，不抓简历 / 任何个人信息**（碰个人信息踩 PIPL，禁止）。
 - **只读公开、无需登录的接口**：遇到登录墙 / 验证码 / 主动反爬的站点**不绕过**；403 或人机验证页直接停下；不用代理池、不伪装浏览器指纹。
-- **如实报身份、低频**：User-Agent 写明 HiringRadar 和项目地址；同一网站两次请求默认间隔 0.3 秒；429 按对方要求退避，仍不行就停下等你续跑。加新来源前检查 robots.txt（Paycom 因此不支持）。
+- **如实报身份、低频**：User-Agent 写明 HiringRadar 和项目地址（唯一例外：飞书招聘和字节跳动的接口不接受程序身份，这两套沿用 v1 的浏览器 UA）；同一网站两次请求默认间隔 0.3 秒；429 按对方要求退避，仍不行就停下等你续跑。加新来源前检查 robots.txt（Paycom 因此不支持）。
 - **密钥只放环境变量**：需要密钥的来源从环境变量读，报错信息里的密钥会打码。
 - **仅本地运行**：不含托管 / 上传 / 服务端；数据只落你本地。二次发布需你自行评估合规，不商用转卖数据。公司名录数据是 CC BY-SA 4.0，再分发须署名并同样许可（见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)）。
 - 「公开可见」≠「可随意聚合再发布」——大规模抓取并公开转载他人数据在多地（含中国《反不正当竞争法》判例）可能构成不正当竞争。

@@ -1,7 +1,6 @@
 """新加坡政府求职网 MyCareersFuture（劳动力发展局 WSG）：全国在招职位，公开搜索接口，免注册。
 列表里有职位名、公司、薪资（新加坡要求标薪资）、类别、发布日期；没有 JD 正文。
 单次查询最多翻 100 页（1 万条，再往后接口直接拒绝），更多请用具体关键词。"""
-import sys
 
 from ..http import post_json
 from ..schema import rec
@@ -58,7 +57,7 @@ def pages(q, state=None):
             total = d.get("total") or 0
             last = len(rows) < PAGE or page * PAGE >= total or page >= MAX_PAGES
             if last and page >= MAX_PAGES and total > page * PAGE:
-                sys.stderr.write(f"[!] MyCareersFuture「{kws[ki]}」共 {total} 条，只能翻到前 {page * PAGE} 条，请用更具体的关键词\n")
+                q.truncate(f"MyCareersFuture「{kws[ki]}」共 {total} 条，只能翻到前 {page * PAGE} 条，请用更具体的关键词")
             yield [to_rec(j) for j in rows], ({"k": ki + 1} if last else {"k": ki, "page": page})
             if last:
                 break

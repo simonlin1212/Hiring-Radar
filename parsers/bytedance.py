@@ -14,20 +14,13 @@
 import os
 import sys
 import json
-import ssl
-import urllib.request
+import urllib.error
 
-CTX = ssl.create_default_context()
-if os.environ.get("HIRING_RADAR_INSECURE") == "1":  # 默认验证 TLS 证书；仅拦截式代理(证书被替换)时设此环境变量关闭
-    CTX.check_hostname = False
-    CTX.verify_mode = ssl.CERT_NONE
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # 仓库根目录
+from radar.http import BROWSER_UA, Blocked, post_json  # noqa: E402  统一联网：限速、429 退避、被拦就停
 API = "https://jobs.bytedance.com/api/v1/search/job/posts"
-HEAD = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
-    "Content-Type": "application/json",
-    "portal-channel": "office",
-    "portal-platform": "pc",
-}
+# 字节招聘网关只认浏览器 UA（如实报身份一律回 405），这里沿用 v1 的浏览器 UA；README 已写明这个例外
+HEAD = {"User-Agent": BROWSER_UA, "portal-channel": "office", "portal-platform": "pc"}
 
 
 def fetch(keyword="", pages=4, limit=30):
@@ -38,8 +31,12 @@ def fetch(keyword="", pages=4, limit=30):
             "job_category_id_list": [], "location_code_list": [],
             "subject_id_list": [], "recruitment_id_list": [],
         }
-        req = urllib.request.Request(API, data=json.dumps(body).encode(), headers=HEAD)
-        d = json.load(urllib.request.urlopen(req, timeout=25, context=CTX))
+        try:
+            d = post_json(API, body, headers=HEAD)
+        except urllib.error.HTTPError as e:
+            if e.code == 405:   # 网关拒绝：当作被拦，停下
+                raise Blocked("字节跳动招聘网关拒绝请求（HTTP 405），停止")
+            raise
         posts = ((d.get("data") or {}).get("job_post_list")) or []
         if not posts:
             break

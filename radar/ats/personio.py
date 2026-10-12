@@ -3,7 +3,7 @@
 import re
 import xml.etree.ElementTree as ET
 
-from ..http import get_text
+from ..http import Blocked, RateLimited, get_text
 from ..schema import rec, strip_html
 
 
@@ -15,6 +15,8 @@ def _t(node, tag):
 def _parse(h):
     try:
         txt = get_text(f"https://{h}/xml")
+    except (Blocked, RateLimited):   # 被拦/限流就停，不再换域名接着试
+        raise
     except Exception:
         return []
     txt = re.sub(r'\sxmlns="[^"]*"', "", txt, count=1)  # 去默认命名空间，便于按 tag 直接查

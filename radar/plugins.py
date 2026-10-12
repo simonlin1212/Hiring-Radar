@@ -8,6 +8,7 @@
 插件是你自己放的本地代码，以你的权限运行；只加载你指定目录里的文件，从不从当前目录或网络加载。
 使用插件访问的网站，其条款由你自行遵守。
 """
+import contextlib
 import glob
 import importlib.util
 import os
@@ -35,7 +36,8 @@ def load(path):
         try:
             spec = importlib.util.spec_from_file_location(f"hiring_radar_plugin_{base[:-3]}", f)
             mod = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(mod)
+            with contextlib.redirect_stdout(sys.stderr):   # 插件导入时打印的内容不能混进 --json / MCP 的输出
+                spec.loader.exec_module(mod)
             for attr in ("NAME", "pages"):
                 if not hasattr(mod, attr):
                     raise ValueError(f"缺少 {attr}")

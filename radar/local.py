@@ -1,6 +1,7 @@
 """本地解析器：解析【自建 / 中国官方企业招聘页】等无标准 ATS 的来源。
 
-机制：spawn 一个本地脚本(放 parsers/ 下)，脚本自己抓页面 + 把岗位 JSON 打到 stdout，本工具解析+过滤+汇总。
+机制：spawn 一个本地脚本(放 parsers/ 下)，脚本抓页面 + 把岗位 JSON 打到 stdout，本工具解析+过滤+汇总。
+内置脚本联网一律用 radar.http（如实报身份、同一主机间隔、429 退避、403/人机验证就停），和其他来源同一套规矩。
 安全：command 只能是已知解释器或 PARSER_ROOT 内文件；解释器情形第一个参数须为 root 内脚本(禁内联代码)；不用 shell。
 """
 import json
@@ -112,7 +113,7 @@ def fetch_local(spec, name="local", keyword="", company=""):
     except subprocess.TimeoutExpired:
         raise RuntimeError(f"local parser 超时({timeout}s): {name}")
     if p.returncode != 0:
-        raise RuntimeError(f"local parser 退出码 {p.returncode}: {(p.stderr or '')[:300]}")
+        raise RuntimeError(f"local parser 退出码 {p.returncode}: {(p.stderr or '').strip()[-300:]}")   # 取末尾：报错原因在最后
     out = (p.stdout or "")[:maxb]
     try:
         data = json.loads(out)

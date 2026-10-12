@@ -3,13 +3,10 @@
 """hiring_radar local-parser：网易官方招聘 API → JSON(stdout)。
 用法: python3 netease.py [keyword] [pages]   匿名 POST JSON，字段六项全。"""
 import os
-import sys, json, ssl, urllib.request
+import sys, json
 
-CTX = ssl.create_default_context()
-if os.environ.get("HIRING_RADAR_INSECURE") == "1":  # 默认验证 TLS 证书；仅拦截式代理(证书被替换)时设此环境变量关闭
-    CTX.check_hostname = False
-    CTX.verify_mode = ssl.CERT_NONE
-HEAD = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", "Content-Type": "application/json"}
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # 仓库根目录
+from radar.http import post_json  # noqa: E402  统一联网：如实报身份、限速、429 退避、被拦就停
 API = "https://hr.163.com/api/hr163/position/queryPage"
 
 
@@ -17,8 +14,7 @@ def fetch(keyword="", pages=6, size=50):
     out = []
     for p in range(1, pages + 1):
         body = {"currentPage": p, "pageSize": size, "keyword": keyword}
-        req = urllib.request.Request(API, data=json.dumps(body).encode(), headers=HEAD)
-        d = json.load(urllib.request.urlopen(req, timeout=25, context=CTX))
+        d = post_json(API, body)
         data = d.get("data") or {}
         rows = data.get("list") or []
         if not rows:

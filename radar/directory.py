@@ -13,7 +13,7 @@ import re
 import sys
 import time
 
-from .http import get_text
+from .http import Blocked, RateLimited, get_text, safe
 
 SOURCE = "https://raw.githubusercontent.com/datascry/openroles/main/data/tenants/{kind}.json"
 ATTRIBUTION = "公司名录数据：openroles dataset © datascry, CC BY-SA 4.0 (github.com/datascry/openroles)"
@@ -43,15 +43,34 @@ def norm(s):
     return "".join(toks)
 
 
+def _old_tenants():
+    try:
+        with open(PATH, encoding="utf-8") as f:
+            return json.load(f).get("tenants") or {}
+    except (OSError, ValueError):
+        return {}
+
+
 def update(kinds):
-    """下载名单（只取本工具支持的系统），保存到本机。返回 {系统: 在线公司数}。"""
+    """下载名单（只取本工具支持的系统），保存到本机。返回 ({系统: 在线公司数}, [没下载成功的系统])。
+    没下载成功的系统保留旧名单；全部失败时不动原文件并抛 RuntimeError。被限流或被拦就停，后面的系统不再请求。"""
     os.makedirs(os.path.dirname(PATH), exist_ok=True)
-    tenants, counts = {}, {}
+    tenants, counts, failed = {}, {}, []
+    stop = None
     for k in kinds:
+        if stop:
+            failed.append(k)
+            continue
         try:
             rows = json.loads(get_text(SOURCE.format(kind=k), timeout=120))
+        except (Blocked, RateLimited) as e:
+            stop = e
+            failed.append(k)
+            sys.stderr.write(f"[!] 名录下载被限流或拦截，停止：{safe(e)}\n")
+            continue
         except Exception as e:  # 某个系统没有名单（如 openroles 不收录）不影响其他
-            sys.stderr.write(f"[!] 名录 {k} 下载失败：{type(e).__name__}: {e}\n")
+            failed.append(k)
+            sys.stderr.write(f"[!] 名录 {k} 下载失败：{type(e).__name__}: {safe(e)}\n")
             continue
         keep = []
         for t in rows:
@@ -63,6 +82,13 @@ def update(kinds):
             keep.append([t["slug"], meta] if meta else [t["slug"]])
         tenants[k] = keep
         counts[k] = len(keep)
+    if not tenants:
+        raise RuntimeError("公司名录一个系统都没下载成功，原有名录保持不变" + (f"（{safe(stop)}）" if stop else ""))
+    old = _old_tenants()
+    for k in failed:   # 没下载成功的系统沿用旧名单
+        if k in old:
+            tenants[k] = old[k]
+            counts[k] = len(old[k])
     doc = {"fetched_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "attribution": ATTRIBUTION,
            "source": SOURCE, "tenants": tenants}
     tmp = PATH + ".tmp"
@@ -71,7 +97,7 @@ def update(kinds):
     os.replace(tmp, PATH)
     global _index
     _index = None
-    return counts
+    return counts, failed
 
 
 def info():

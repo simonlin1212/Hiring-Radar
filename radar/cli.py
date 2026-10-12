@@ -7,7 +7,7 @@ import sys
 from collections import Counter
 
 from . import __version__, ats, boards, directory, http, local, plugins, process, store, sweep
-from .schema import AGE_LABEL, AGES, fmt_date, short
+from .schema import AGE_LABEL, AGES, fmt_date, older_than, short
 
 # 内置：已实测命中的公司 → ATS（新公司加一行即可）。名录里查得到的公司不必加。
 # greenhouse/ashby/lever: ("kind", slug)；workday: ("workday", host, tenant, site)
@@ -51,10 +51,17 @@ def _company_items(company, explicit, search, use_directory):
         items, src = ats.fetch(cfg[0], cfg[1])
         return items, src, []
     cands = directory.lookup(company) if use_directory else []
+    blocked = {}   # 被拦/限流的系统：按约定不再请求它（包括同系统的其他候选）
     for c in cands:
+        if c["ats"] in blocked:
+            continue
         try:
             meta = dict(c["meta"], search=search) if c["ats"] == "workday" else c["meta"]
             items, src = ats.fetch(c["ats"], c["slug"], meta)
+        except (http.Blocked, http.RateLimited) as e:
+            blocked[c["ats"]] = e
+            sys.stderr.write(f"[!] {c['ats']} 拦截或限流，不再请求这个系统：{e}\n")
+            continue
         except Exception as e:
             if http.DEBUG:
                 sys.stderr.write(f"[debug] 名录候选 {c['ats']}/{c['slug']} 失败: {type(e).__name__}: {e}\n")
@@ -70,16 +77,21 @@ def _company_items(company, explicit, search, use_directory):
     # auto-probe（最佳猜测）：先试常见 GH/Ashby/Lever，再试另外 5 个 ATS，命中第一个非空即返回。
     # ⚠️ 跨 ATS 探测有「同名不同公司」撞库风险（如 figure），精确查询用显式 --xxx 旗标。
     slug = re.sub(r"[^a-z0-9-]", "", key.replace(" ", "-"))
-    if not slug:
-        return [], None, cands
-    for kind in ats.PROBE_ORDER:
+    for kind in ats.PROBE_ORDER if slug else ():
+        if kind in blocked:
+            continue
         try:
             items, src = ats.fetch(kind, slug)
             if items:
                 return items, src, cands
+        except (http.Blocked, http.RateLimited) as e:
+            blocked[kind] = e
+            sys.stderr.write(f"[!] {kind} 拦截或限流，不再请求这个系统：{e}\n")
         except Exception as e:
             if http.DEBUG:
                 sys.stderr.write(f"[debug] auto-probe {kind}({slug}) 失败: {type(e).__name__}: {e}\n")
+    if blocked:   # 没查到，而且有系统拦了我们：报拦截，不报「没命中」
+        raise next(iter(blocked.values()))
     return [], None, cands
 
 
@@ -139,7 +151,7 @@ def _print_history(rows):
         if r["scope"] != cur:
             cur = r["scope"]
             print(f"== {cur}")
-        delta = "首次" if r["new"] is None else f"新增 {r['new']} · 下架 {r['gone']}"
+        delta = "不完整，不比较" if not r["complete"] else "首次" if r["new"] is None else f"新增 {r['new']} · 下架 {r['gone']}"
         print(f"   {r['at'][:16].replace('T', ' ')}  {r['n']:>6} 条  {delta}")
 
 
@@ -182,6 +194,7 @@ def build_parser():
 
 def main(argv=None):
     local.load_company_seeds()
+    http.guard_stderr()   # 之后写到 stderr 的报错、调试日志、堆栈都先打码
     a = build_parser().parse_args(argv)
     http.DEBUG = a.debug
     plugins.load(a.plugins or os.environ.get("HIRING_RADAR_PLUGINS", ""))
@@ -189,10 +202,16 @@ def main(argv=None):
     if a.list:
         return _print_list()
     if a.directory_update:
-        counts = directory.update([k for k in ats.REGISTRY])
+        try:
+            counts, failed = directory.update([k for k in ats.REGISTRY])
+        except RuntimeError as e:
+            _err(f"[x] {http.safe(e)}")
         print(f"公司名录已更新：{sum(counts.values())} 家 → {directory.PATH}")
         print("  " + " · ".join(f"{k} {v}" for k, v in sorted(counts.items(), key=lambda x: -x[1])))
         print(f"  {directory.ATTRIBUTION}")
+        if failed:
+            sys.stderr.write(f"[!] 部分更新：{', '.join(failed)} 没下载成功，保留了旧名单（如有）；稍后再跑 --directory-update\n")
+            sys.exit(3)
         return
     if a.find:
         hits = directory.lookup(a.find)
@@ -235,15 +254,17 @@ def main(argv=None):
             items, report = sweep.run(names, q, resume=a.resume)
         except KeyboardInterrupt:
             _err("\n[i] 已中断，进度已保存；同样的命令加 --resume 继续", 130)
-        incomplete = any("error" in r for r in report.values())
+        incomplete = sweep.incomplete(report)
         src = "boards:" + ",".join(names)
         process.annotate(items)
         total = len(items)
-        if len(names) > 1 and not a.no_dedupe:
+        deduped = len(names) > 1 and not a.no_dedupe
+        if deduped:
             items = process.dedupe(items, order=names)
         filt = items
         scope = f"boards:{','.join(names)}|{','.join(q.countries)}|{','.join(kws)}"
-        query = dict(q.as_dict(), boards=names)
+        query = dict(q.as_dict(), boards=names, dedupe=deduped, no_agency=a.no_agency)
+        complete = not incomplete and not any(r.get("capped") for r in report.values())
     else:
         if a.local or a.script:
             if a.local:
@@ -261,7 +282,7 @@ def main(argv=None):
             try:
                 items, src = local.fetch_local(spec, name=pname, keyword=first_kw, company=a.company)
             except Exception as e:
-                _err(f"[x] 本地解析失败: {e}")
+                _err(f"[x] 本地解析失败: {http.safe(e)}")
         else:
             if not a.company and not explicit:
                 build_parser().print_help()
@@ -272,9 +293,9 @@ def main(argv=None):
             try:
                 items, src, cands = _company_items(a.company, explicit, wd_search, not a.no_directory)
             except (http.Blocked, http.RateLimited) as e:
-                _err(f"[x] {e}")
+                _err(f"[x] {http.safe(e)}")
             except Exception as e:
-                _err(f"[x] 取数失败: {e}")
+                _err(f"[x] 取数失败: {http.safe(e)}")
         if not items:
             if a.local or a.script:   # 数据源已命中、解析正常，只是当前无在招岗位（如招聘周期空档）
                 _err(f"[i] {src} 数据源正常，当前无在招岗位（在招总数 0）。")
@@ -284,25 +305,41 @@ def main(argv=None):
         process.annotate(items)
         filt = [it for it in items if sweep.keyword_match(it, kws)]
         if a.recent_days:
-            filt = [it for it in filt if (process.days_ago(it["date"]) or 0) <= a.recent_days]  # 无日期的保留
+            filt = [it for it in filt if not older_than(it["date"], a.recent_days)]  # 无日期、说不准的保留
         scope = src
         shown_days = a.recent_days or 0
-        query = {"company": a.company, "keywords": kws, "recent_days": shown_days}
+        query = {"company": a.company, "keywords": kws, "recent_days": shown_days, "no_agency": a.no_agency}
+        wd = next((it["_wd"] for it in items if it.get("_wd")), None)
+        if wd:   # 同一 tenant 可能有多个招聘站点；--jd 会换成真实日期。条件不同的两次不互相比较
+            query["workday_site"] = f"{wd[0]}/{wd[2]}"
+            query["jd"] = bool(a.jd)
+        complete = True
 
     if a.no_agency:
         filt = [it for it in filt if not it.get("agency")]
 
     # --jd：Workday 逐岗补抓完整 JD（对【过滤后】的集合做，避免抓全站）
+    jd_err = ""
     if a.jd and filt and src and src.startswith("workday"):
-        filt = ats.workday.enrich_jds(filt)
+        filt, jd_err = ats.workday.enrich_jds(filt)
+        if jd_err:   # 没补完 JD：结果不全，也不能当以后比较的基线
+            incomplete, complete = True, False
+        if shown_days:   # 补到真实日期后，按近 N 天再筛一次
+            filt = [it for it in filt if not older_than(it["date"], shown_days)]
     for it in filt:
         it.pop("_wd", None)
 
-    saved = store.save(filt, scope, query, a.db) if a.save else None
+    saved = store.save(filt, scope, query, a.db, complete=complete) if a.save else None
 
     if incomplete:
-        bad = ", ".join(k for k, v in report.items() if "error" in v)
-        sys.stderr.write(f"[!] 没拉完的来源：{bad}。已拉到的照常输出；稍后同样的命令加 --resume 只补没完成的部分\n")
+        bad = ", ".join(k for k, v in report.items() if v.get("error"))
+        cut = ", ".join(k for k, v in report.items() if v.get("truncated") and not v.get("error"))
+        if bad:
+            sys.stderr.write(f"[!] 没拉完的来源：{bad}。已拉到的照常输出；稍后同样的命令加 --resume 只补没完成的部分\n")
+        if cut:
+            sys.stderr.write(f"[!] 结果不全的来源：{cut}（上游翻页有上限，续跑补不回来；请缩小查询，如加关键词、国家或缩短近 N 天）\n")
+    if jd_err:
+        sys.stderr.write(f"[!] --jd 没补完（{jd_err}），这次结果标为不全；稍后再跑\n")
     if a.json:
         out = {"source": src, "total": total, "matched": len(filt), "jobs": filt, "version": __version__,
                "query": query, "ages": process.age_counts(filt)}
@@ -329,7 +366,8 @@ def main(argv=None):
     print(head)
     if report:
         print("   🧭 各来源：" + " · ".join(f"{k} {v['n']}" + ("(到上限)" if v["capped"] else "")
-                                       + ("(未完成)" if "error" in v else "") for k, v in report.items()))
+                                       + ("(未完成)" if v.get("error") else "(不全)" if v.get("truncated") else "")
+                                       for k, v in report.items()))
     with_jd = sum(1 for it in filt if it["jd"])
     with_comp = sum(1 for it in filt if it["comp"])
     print(f"   📦 字段覆盖：含完整 JD {with_jd}/{len(filt)} · 含薪资 {with_comp}/{len(filt)}（完整内容在 --json）")
@@ -339,7 +377,12 @@ def main(argv=None):
     if n_ag:
         print(f"   🧑‍💼 疑似中介/猎头：{n_ag}（--no-agency 可去掉）")
     if saved:
-        delta = "首次存档" if saved["new"] is None else f"比上次（{saved['prev_at'][:10]}）新增 {saved['new']} · 下架 {saved['gone']}"
+        if not saved["complete"]:
+            delta = "这次结果不完整，只记录，不和上次比较新增/下架"
+        elif saved["new"] is None:
+            delta = "首次存档（同样条件下还没有完整的上一次）"
+        else:
+            delta = f"比上次（{saved['prev_at'][:10]}）新增 {saved['new']} · 下架 {saved['gone']}"
         print(f"   💾 已存档：{delta}")
 
     comp_c = Counter(it.get("company", "") for it in filt if it.get("company"))

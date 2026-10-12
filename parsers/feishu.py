@@ -10,25 +10,24 @@
   例:  python3 feishu.py nio.jobs.feishu.cn 蔚来 算法
 """
 import os
-import sys, json, re, ssl, urllib.request
+import sys, json, re, urllib.error
 
-CTX = ssl.create_default_context()
-if os.environ.get("HIRING_RADAR_INSECURE") == "1":  # 默认验证 TLS 证书；仅拦截式代理(证书被替换)时设此环境变量关闭
-    CTX.check_hostname = False
-    CTX.verify_mode = ssl.CERT_NONE
-UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-BROWSER = {"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,*/*;q=0.8", "Accept-Language": "zh-CN,zh;q=0.9"}
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # 仓库根目录
+from radar.http import BROWSER_UA, Blocked, RateLimited, get_text, post_json  # noqa: E402  统一联网：限速、429 退避、被拦就停
+# 飞书招聘网关只认浏览器 UA（如实报身份一律回 405），这里沿用 v1 的浏览器 UA；README 已写明这个例外
+PAGE = {"User-Agent": BROWSER_UA, "Accept": "text/html,application/xhtml+xml,*/*;q=0.8", "Accept-Language": "zh-CN,zh;q=0.9"}
 _PATH_RE = re.compile(r"[A-Za-z0-9_/-]{1,40}")
 
 
 def _homepage_path(host):
     try:
-        html = urllib.request.urlopen(urllib.request.Request(f"https://{host}/", headers=BROWSER),
-                                      timeout=20, context=CTX).read().decode("utf-8", "replace")
+        html = get_text(f"https://{host}/", headers=PAGE, timeout=20)
         m = re.search(r'id="js-websiteInfo"[^>]*>(.*?)</script>', html, re.S)
         if m:
             p = ((json.loads(m.group(1)).get("website_info")) or {}).get("path", "") or ""
             return p if _PATH_RE.fullmatch(p or "") else ""
+    except (Blocked, RateLimited):
+        raise                     # 被拦/限流就停，不再试别的路径
     except Exception:
         pass
     return ""
@@ -38,34 +37,34 @@ def _call(host, path, keyword, limit, offset):
     body = {"keyword": keyword, "limit": limit, "offset": offset, "portal_type": 2,
             "job_category_id_list": [], "location_code_list": [], "subject_id_list": [],
             "recruitment_id_list": [], "job_function_id_list": []}
-    headers = {"User-Agent": UA, "Content-Type": "application/json", "Accept": "application/json",
-               "Origin": f"https://{host}", "Referer": f"https://{host}/",
+    headers = {"User-Agent": BROWSER_UA, "Origin": f"https://{host}", "Referer": f"https://{host}/",
                "Portal-Channel": "office", "Portal-Platform": "pc", "website-path": path}
-    req = urllib.request.Request(f"https://{host}/api/v1/search/job/posts", data=json.dumps(body).encode(), headers=headers)
-    return json.load(urllib.request.urlopen(req, timeout=25, context=CTX))
+    try:
+        return post_json(f"https://{host}/api/v1/search/job/posts", body, headers=headers)
+    except urllib.error.HTTPError as e:
+        if e.code == 405:   # 网关拒绝：当作被拦，停下，不换路径重试
+            raise Blocked(f"飞书招聘网关拒绝请求（HTTP 405）：{host}，停止")
+        raise
 
 
 def _resolve_path(host, keyword, forced=""):
     # 显式 website-path：门户不在根路径时用（如 galbot owm6...feishu.cn/870797）。根目录探测会 404。
-    if forced:
+    def ok(path):
         try:
-            if _call(host, forced, keyword, 1, 0).get("code") == 0:
-                return forced
+            return _call(host, path, keyword, 1, 0).get("code") == 0
+        except (Blocked, RateLimited):
+            raise                 # 被拦/限流就停，不再试别的路径
         except Exception:
-            pass
+            return False
+
+    if forced and ok(forced):
+        return forced
     p = _homepage_path(host)
-    if p:
-        try:
-            if _call(host, p, keyword, 1, 0).get("code") == 0:
-                return p
-        except Exception:
-            pass
+    if p and ok(p):
+        return p
     for cand in ("index", "experienced", "fte", "social", "recruitment", "campus"):
-        try:
-            if _call(host, cand, keyword, 1, 0).get("code") == 0:
-                return cand
-        except Exception:
-            continue
+        if ok(cand):
+            return cand
     return p or "index"
 
 

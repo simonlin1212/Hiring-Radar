@@ -1,7 +1,6 @@
 """德国联邦就业局（Bundesagentur für Arbeit）职位搜索接口：德国最大的职位库（也含部分奥地利等邻国职位），免注册。
 X-API-Key 用的是官方网页客户端的公开固定标识 jobboerse-jobsuche（见 jobsuche.api.bund.dev），不是个人密钥。
 列表有职位名、雇主、地点、首次发布日期；没有 JD 正文。单次查询最多翻 100 页（1 万条），更多请用具体关键词。"""
-import sys
 
 from ..http import get_json
 from ..schema import rec
@@ -61,7 +60,7 @@ def pages(q, state=None):
             total = int(d.get("maxErgebnisse") or 0)
             last = len(rows) < PAGE or page * PAGE >= total or page >= MAX_PAGES
             if last and page >= MAX_PAGES and total > page * PAGE:
-                sys.stderr.write(f"[!] Arbeitsagentur「{kws[ki]}」共 {total} 条，只能翻到前 {page * PAGE} 条，请用更具体的关键词\n")
+                q.truncate(f"Arbeitsagentur「{kws[ki]}」共 {total} 条，只能翻到前 {page * PAGE} 条，请用更具体的关键词")
             page += 1
             yield [to_rec(j) for j in rows], ({"k": ki + 1} if last else {"k": ki, "page": page})
             if last:

@@ -25,7 +25,7 @@ def fetch_platform(slug, domain, params, kind):
     out = []
     for j in ((d.get("data") or {}).get("jobs") or []):
         lo, hi = j.get("minSalary"), j.get("maxSalary")
-        comp = (f"{lo}-{hi}" if lo and hi and lo != hi else (lo or hi or j.get("payRate") or "")) or ""
+        comp = str((f"{lo}-{hi}" if lo and hi and lo != hi else (lo or hi or j.get("payRate") or "")) or "")
         if comp and j.get("payTypeFrame"):
             comp += f" {j['payTypeFrame']}"
         url = j.get("jobUrl") or f"https://{slug}.{domain}/jobs/{j.get('id', '')}"

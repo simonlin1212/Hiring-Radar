@@ -1,18 +1,19 @@
-"""freehire（github.com/strelov1/freehire，MIT）公开接口：225 个来源、300 多万在招职位，免注册，含完整 JD。
+"""freehire（github.com/strelov1/freehire，MIT）公开接口：225 个来源、自称约 330 万在招职位，免注册，含完整 JD。
 
 条款允许通过公开接口自动读取，禁止绕过接口另行抓取、禁止绕过限流；作者实测限速约每分钟 300 次。
 本模块每页 100 条，同一主机请求间隔不低于 HIRING_RADAR_DELAY（默认 0.3 秒），远低于限速。
 单次查询最多翻到第 10,000 条（freehire 的翻页深度上限）；超过时按 freehire 文档建议用筛选条件
 （按来源 source）拆成多次查询，请求总数不变，不是绕限流。
 """
-import sys
 
 from ..http import get_json
 from ..schema import rec
 
 NAME = "freehire"
 DESC = "freehire 聚合（225 个来源，可按国家/关键词/近 N 天，含完整 JD）"
-FILTERS = {"keyword", "country", "recent_days"}
+# 关键词也发给服务端缩小范围，但 freehire 对多个词按 OR 搜、还做词干匹配，和其他来源的「整串包含」不同；
+# 所以不算服务端过滤，返回后由 sweep 按统一规则再筛一遍。
+FILTERS = {"country", "recent_days"}
 API = "https://freehire.me/api/v1"
 PAGE, CAP = 100, 10000
 
@@ -82,7 +83,7 @@ def pages(q, state=None):
                 total = (d.get("meta") or {}).get("total") or 0
                 last = len(rows) < params["limit"] or off >= min(total, CAP)
                 if last and total > CAP:
-                    sys.stderr.write(f"[!] freehire {parts[pi] or base} 共 {total} 条，超过翻页上限，只拉到前 {CAP} 条\n")
+                    q.truncate(f"freehire {parts[pi] or base} 共 {total} 条，超过翻页上限，只拉到前 {CAP} 条")
                 nxt = {"k": ki, "parts": parts, "p": pi + 1, "off": 0} if last else {"k": ki, "parts": parts, "p": pi, "off": off}
                 yield [to_rec(j) for j in rows], nxt
                 if last:

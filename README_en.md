@@ -25,6 +25,7 @@
   <a href="#for-ai-assistants-mcp">MCP</a> ·
   <a href="#output-fields">Output fields</a> ·
   <a href="#sources">Sources</a> ·
+  <a href="#related-projects-where-to-find-the-big-platforms">Related projects</a> ·
   <a href="#responsible-use--compliance">Responsible use</a>
 </p>
 
@@ -42,7 +43,7 @@ Three ways to use it:
 
 **Big global names work from just a company name**, e.g. NVIDIA · OpenAI · Anthropic · Stripe · Databricks · Coinbase · Reddit · Discord · Cloudflare · Notion · Scale AI · Figure · Perplexity · 1X · Cohere · GitLab, and more.
 
-**New in v2**: 24 ATS plus a directory of ~90,000 companies (look up which system a company uses by name) · 12 cross-company sources (incl. the freehire aggregator and the Swedish, Singaporean and German government job banks) · cross-source dedupe and agency flags · posting-age buckets · resumable runs · local snapshots to see new/removed jobs · an **MCP server** your AI assistant can call directly.
+**New in v2**: 24 ATS plus a directory of ~90,000 companies (look up which system a company uses by name) · 12 cross-company sources (incl. the freehire aggregator and the Swedish, Singaporean and German government job banks) · cross-source dedupe and agency flags · posting-age buckets · resumable runs · local snapshots to see new/removed jobs · an **MCP server** your AI assistant can call directly. Full list in [CHANGELOG.md](CHANGELOG.md).
 
 > ⚠️ It reads **job postings that companies publish themselves** — never resumes or personal data, never login-gated content, and it stops at any bot check. See [Responsible use](#responsible-use--compliance).
 
@@ -85,7 +86,7 @@ python3 hiring_radar.py --board jobtech --keyword ekonomiassistent --recent-days
 python3 hiring_radar.py --board all --keyword "AI engineer"                              # the 4 remote boards
 
 # 3) Resume after an interruption / snapshot to track changes
-python3 hiring_radar.py --board freehire --country AU --max 0 --resume
+python3 hiring_radar.py --board freehire,workable --country AU --max 0 --json --resume > au.json   # after an interruption: exactly the same flags as above, plus --resume
 python3 hiring_radar.py anthropic --save          # the next run shows new/removed jobs
 python3 hiring_radar.py --history
 
@@ -97,9 +98,11 @@ python3 hiring_radar.py --local tencent --keyword 算法       # Tencent (in-hou
 
 **Common flags**: `--keyword a,b` (any match) · `--recent-days N` (0 = no limit) · `--country AU,NZ` · `--max N` (per-source cap, default 1000, 0 = no cap) · `--no-agency` · `--json` · `--limit N` · `--debug`
 
+**Upgrading from v1**: `--board` now defaults to the last 183 days, at most 1,000 jobs per source, and de-duplication across sources; for v1-style results add `--recent-days 0 --max 0 --no-dedupe`.
+
 **Environment variables**: `HIRING_RADAR_HOME` (directory, snapshots and resume state; default `~/.hiring-radar`) · `HIRING_RADAR_DELAY` (minimum seconds between two requests to the same site; default 0.3) · `HIRING_RADAR_PLUGINS` (private plugin folder) · `HIRING_RADAR_INSECURE=1` (disable certificate checks, only behind an intercepting proxy)
 
-Exit codes: `0` OK; `3` some sources did not finish (what was fetched is still printed; use `--resume`).
+Exit codes: `0` OK; `1` error; `3` incomplete — a source stopped on an error (what was fetched is still printed; rerun the same command with `--resume`), an upstream paging limit returned only part of the results (resuming cannot help; narrow the query), or `--directory-update` could not download some systems (their old lists are kept).
 
 ## For AI Assistants (MCP)
 
@@ -175,6 +178,31 @@ python3 hiring_radar.py --plugins ~/my-plugins --board myboard --country AU
 
 Every `.py` file in the plugin folder that doesn't start with `_` is one source, defining `NAME`, `DESC`, `FILTERS` and `pages(q, state=None)` (same interface as `radar/boards/`); files starting with `_` can hold shared code. Plugins run with your permissions, and you are responsible for the terms of the sites they visit.
 
+## Related Projects: Where to Find the Big Platforms
+
+Hiring Radar ships no scrapers for big platforms such as Indeed, LinkedIn or SEEK. The two third-party open-source repositories below do; the table shows, per platform, roughly where the code lives so you can look for yourself.
+
+- **[speedyapply/JobSpy](https://github.com/speedyapply/JobSpy)**: Python library, MIT licence. Queries several platforms at once and returns title, company, location, salary, link and description.
+- **[strelov1/freehire](https://github.com/strelov1/freehire)**: Job search engine written in Go, MIT licence, 225 sources. Its code in the table is part of its back-end crawler, not a standalone library; this repo's `--board freehire` reads its public API.
+
+| Platform | Coverage | Repository | Approximate location |
+|---|---|---|---|
+| Indeed | ~60 countries, incl. US, UK, CA, AU, NZ, IE | JobSpy | `jobspy/indeed/` |
+| LinkedIn | Worldwide | JobSpy | `jobspy/linkedin/` |
+| Glassdoor | ~20 countries | JobSpy | `jobspy/glassdoor/` |
+| ZipRecruiter | US, Canada | JobSpy | `jobspy/ziprecruiter/` |
+| Google Jobs | Put the location in the search term | JobSpy | `jobspy/google/` |
+| Naukri | India | JobSpy | `jobspy/naukri/` |
+| Bayt | Middle East & Gulf | JobSpy | `jobspy/bayt/` |
+| BDJobs | Bangladesh | JobSpy | `jobspy/bdjobs/` |
+| HelloWork | France | JobSpy | `jobspy/hellowork/` |
+| SEEK | Australia, New Zealand | freehire | `internal/ingest/sources/seek.go` |
+| JobStreet / JobsDB | SG, MY, ID, PH / HK, TH | freehire | same `seek.go` (shared protocol) |
+| LinkedIn public job listings | Worldwide; used only to find companies that are hiring | freehire | `cmd/harvest-linkedin/` |
+| WhatJobs | Many countries; needs a WhatJobs publisher account | freehire | `internal/ingest/sources/whatjobs.go` |
+
+> These are third-party projects, not part of Hiring Radar. We have not reviewed their code, and we provide no code to plug them into this tool. An open-source licence covers how the code may be used, not whether a platform allows scraping: check the target site's terms of use and robots.txt first. Checked on 2026-10-12; the repositories may change.
+
 ## Add a Company = Add a Line (China)
 
 The Chinese company list is `parsers/companies.seed` (`|`-separated); adding a company is one line:
@@ -197,7 +225,7 @@ Hiring is a **leading indicator**: where a company is expanding, in what directi
 
 ```
 Hiring-Radar/
-├── hiring_radar.py     # command-line entry (v1 usage unchanged)
+├── hiring_radar.py     # command-line entry (v1 command syntax unchanged)
 ├── radar/              # core package
 │   ├── http.py         # network: honest identity, pacing, backoff, stop when blocked
 │   ├── schema.py       # unified fields, dates, age buckets
@@ -227,7 +255,7 @@ A **personal / research, local + open-source** tool. Use it responsibly:
 
 - **Read job postings only — never resumes / any personal data** (personal data triggers China's PIPL — don't).
 - **Read only public, login-free endpoints**: if a site has a login wall / captcha / active anti-bot, **don't bypass it**; a 403 or bot-check page stops the run; no proxy pools, no browser-fingerprint spoofing.
-- **Honest identity, low frequency**: the User-Agent names HiringRadar and the project URL; by default 0.3 seconds between two requests to the same site; on 429 it backs off as asked, and if that still fails it stops and waits for you to resume. robots.txt is checked before a new source is added (which is why Paycom is not supported).
+- **Honest identity, low frequency**: the User-Agent names HiringRadar and the project URL (the one exception: the Feishu Hire and ByteDance APIs reject a program identity, so those two parsers keep v1's browser User-Agent); by default 0.3 seconds between two requests to the same site; on 429 it backs off as asked, and if that still fails it stops and waits for you to resume. robots.txt is checked before a new source is added (which is why Paycom is not supported).
 - **Keys only in environment variables**: sources that need a key read it from the environment, and keys are masked in error messages.
 - **Local only**: no hosting / upload / server side; data lands only on your machine. If you re-publish the data, evaluate compliance yourself; no commercial resale. The company directory is CC BY-SA 4.0 — redistribution requires attribution and the same license (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
 - "Publicly viewable" ≠ "free to aggregate and re-publish" — mass scraping + re-publishing can constitute unfair competition in many jurisdictions (incl. Chinese Anti-Unfair-Competition case law).

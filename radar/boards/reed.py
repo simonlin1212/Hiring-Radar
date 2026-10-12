@@ -3,7 +3,6 @@
 
 注意：本模块按官方文档的字段编写，维护者没有 key，未经实网测试。"""
 import base64
-import sys
 from datetime import datetime
 
 from ..http import get_json
@@ -58,7 +57,7 @@ def pages(q, state=None):
             total = d.get("totalResults") or 0
             last = len(rows) < PAGE or skip >= total or skip >= CAP
             if last and skip >= CAP and total > skip:
-                sys.stderr.write(f"[!] Reed「{kws[ki]}」共 {total} 条，只拉前 {skip} 条\n")
+                q.truncate(f"Reed「{kws[ki]}」共 {total} 条，只拉前 {skip} 条")
             yield [to_rec(j) for j in rows], ({"k": ki + 1} if last else {"k": ki, "skip": skip})
             if last:
                 break
