@@ -8,7 +8,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 fail = []
 
 # 1) 全部 .py 编译
-for f in [os.path.join(ROOT, "hiring_radar.py")] + sorted(glob.glob(os.path.join(ROOT, "parsers", "*.py"))):
+for f in ([os.path.join(ROOT, "hiring_radar.py")] + sorted(glob.glob(os.path.join(ROOT, "parsers", "*.py")))
+          + sorted(glob.glob(os.path.join(ROOT, "radar", "**", "*.py"), recursive=True))):
     try:
         py_compile.compile(f, doraise=True)
     except Exception as e:
@@ -25,7 +26,11 @@ checks = [
     ("BOARDS 含 remoteok", "remoteok" in m.BOARDS),
     ("LOCAL_PARSERS 含内置 tencent", "tencent" in m.LOCAL_PARSERS),
     ("种子表已加载(>100 家)", len(m.LOCAL_PARSERS) > 100),
-    ("FIELDS 为 15 字段", len(m.FIELDS) == 15),
+    ("FIELDS 前 15 个为 v1 字段", m.FIELDS[:15] == ["title", "company", "dept", "team", "location", "remote", "type",
+                                               "date", "date_updated", "req_id", "comp", "jd", "url", "apply_url", "id"]),
+    ("FIELDS 为 24 字段", len(m.FIELDS) == 24),
+    ("BOARDS 含 freehire / workable", "freehire" in m.BOARDS and "workable" in m.BOARDS),
+    ("v1 兼容函数可用", callable(m.fetch_greenhouse) and callable(m.fetch_workday)),
 ]
 for name, ok in checks:
     if not ok:
